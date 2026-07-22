@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
@@ -32,15 +36,30 @@
             <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
         </div>
         <div class="hidden md:flex gap-8 font-medium">
-            <a href="#" class="text-indigo-600">Jelajahi</a>
-            <a href="#" class="hover:text-indigo-600 transition">Kategori</a>
-            <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
+            <a href="{{ route('home') }}#events" class="nav-link text-slate-900 hover:text-indigo-600 transition">Jelajahi</a>
+            <a href="{{ route('home') }}#kategori" class="nav-link text-slate-900 hover:text-indigo-600 transition">Kategori</a>
+            <a href="{{ route('home') }}#tentang-kami" class="nav-link text-slate-900 hover:text-indigo-600 transition">Tentang Kami</a>
         </div>
-        <!-- <div class="flex gap-3">
-            <button class="px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition">Login</button>
-            <button
-                class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">Daftar</button>
-        </div> -->
+        <div class="flex items-center gap-3">
+            @auth
+                <details class="relative group">
+                    <summary class="list-none cursor-pointer flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 shadow-sm text-white hover:bg-indigo-700 transition">
+                        <span class="text-sm font-semibold">Profile</span>
+                        <svg class="w-4 h-4 text-white transition group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </summary>
+                    <div class="absolute left-0 mt-3 w-full rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden z-50">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-5 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition">Logout</button>
+                        </form>
+                    </div>
+                </details>
+            @else
+                <a href="{{ route('login') }}" class="px-5 py-2.5 rounded-xl font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">Masuk/Daftar</a>
+            @endauth
+        </div>
     </nav>
 
 
@@ -64,7 +83,7 @@
     @endisset
 
     <!-- Footer -->
-    <footer class="bg-indigo-900 text-indigo-100 py-20 px-6 mt-20">
+    <footer id="tentang-kami" class="bg-indigo-900 text-indigo-100 py-20 px-6 mt-20 scroll-mt-28">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="space-y-4">
                 <div class="flex items-center gap-2">
@@ -83,7 +102,7 @@
                     @isset($categories)
                         @foreach($categories as $cat)
                             <li>
-                                <a href="/?category={{ $cat->slug }}" class="hover:text-white transition">
+                                <a href="{{ route('home') }}?category={{ $cat->id }}#kategori" class="hover:text-white transition">
                                     {{ $cat->name }}
                                 </a>
                             </li>
@@ -112,6 +131,38 @@
         </div>
     </footer>
 
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const hashToId = {
+            '#events': 'events',
+            '#kategori': 'kategori',
+            '#tentang-kami': 'tentang-kami'
+        };
+
+        function updateActiveLink() {
+            const currentHash = window.location.hash || '#events';
+            navLinks.forEach(link => {
+                if (link.getAttribute('href').endsWith(currentHash)) {
+                    link.classList.add('text-indigo-600');
+                    link.classList.remove('text-slate-900');
+                } else {
+                    link.classList.remove('text-indigo-600');
+                    link.classList.add('text-slate-900');
+                }
+            });
+        }
+
+        window.addEventListener('hashchange', updateActiveLink);
+        window.addEventListener('load', () => {
+            updateActiveLink();
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                setTimeout(updateActiveLink, 50);
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -34,7 +34,7 @@
                 class="absolute -bottom-10 -right-10 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
             </div>
             <img src="{{ asset('assets/concert.png') }}" alt="Concert"
-                class="rounded-[2rem] shadow-2xl relative z-10 w-full object-cover aspect-[4/5] object-center">
+                class="rounded-4xl shadow-2xl relative z-10 w-full object-cover aspect-4/5 object-center">
 
             <div class="absolute -bottom-6 -left-6 glass p-6 rounded-2xl shadow-xl z-20 border border-white">
                 <div class="flex items-center gap-4">
@@ -54,20 +54,20 @@
     </section>
 
     <!-- Events Grid -->
-    <section id="events" class="max-w-7xl mx-auto px-6 py-20">
+    <section id="events" class="max-w-7xl mx-auto px-6 py-20 scroll-mt-28">
 
 
         <!-- Judul & Filter Kategori Sejajar -->
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        <div id="kategori" class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 scroll-mt-28">
             <div class="text-center md:text-left">
                 <h2 class="text-3xl font-extrabold mb-2">Event Terdekat</h2>
                 <p class="text-slate-500 font-medium">Jangan sampai ketinggalan acara seru minggu ini!</p>
             </div>
             <!-- Blok Navigasi Filter Kategori -->
             <div class="flex gap-4">
-                <a href="/" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-black transition">Semua Kategori</a>
+                <a href="{{ route('home') }}#kategori" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-black transition">Semua Kategori</a>
                 @foreach($categories as $cat)
-                    <a href="/?category={{ $cat->slug }}"
+                    <a href="{{ route('home') }}?category={{ $cat->id }}#kategori"
                        class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded shadow-sm transition">
                         {{ $cat->name }}
                     </a>
@@ -79,7 +79,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($events as $event)
                 <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                    <div class="relative overflow-hidden aspect-[3/4]">
+                    <div class="relative overflow-hidden aspect-3/4">
                         <img src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) ? asset('storage/' . $event->poster_path) : 'https://placehold.co/200x600' }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         <div
                             class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
@@ -102,6 +102,21 @@
                     </div>
                 </div>
                 @endforeach
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 pb-20">
+        <div class="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <p class="text-sm font-black tracking-[0.2em] text-indigo-500 uppercase">Tentang Kami</p>
+                    <h3 class="text-3xl font-black mt-2">Platform tiket untuk event kampus dan komunitas.</h3>
+                </div>
+                <div class="md:col-span-2 text-slate-600 leading-relaxed space-y-4">
+                    <p>AmikomEventHub membantu pembeli menemukan event, pesan tiket dengan cepat, dan menerima tiket secara aman. Pembayaran didukung Midtrans sehingga proses transaksi lebih praktis.</p>
+                    <p>Untuk penyelenggara event, tersedia jalur login partner dan dashboard pengelolaan event yang terpisah dari akun pembeli.</p>
+                </div>
+            </div>
         </div>
     </section>
 

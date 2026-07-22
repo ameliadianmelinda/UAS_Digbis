@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -32,6 +33,10 @@ class CheckoutController extends Controller
             return back()->with('error', 'Mohon maaf, tiket untuk acara ini sudah habis.');
         }
 
+        $customerName = Auth::user()?->name ?? $request->customer_name;
+        $customerEmail = Auth::user()?->email ?? $request->customer_email;
+        $customerPhone = $request->customer_phone;
+
         // 3. Generate Kode TRX (Unik)
         $orderId = 'TRX-' . time() . '-' . Str::random(5);
         $totalPrice = $event->price + 5000; // Menambahkan biaya admin (dummy)
@@ -39,9 +44,9 @@ class CheckoutController extends Controller
         $transaction = Transaction::create([
             'order_id' => $orderId,
             'event_id' => $event->id,
-            'customer_name' => $request->customer_name,
-            'customer_email' => $request->customer_email,
-            'customer_phone' => $request->customer_phone,
+            'customer_name' => $customerName,
+            'customer_email' => $customerEmail,
+            'customer_phone' => $customerPhone,
             'total_price' => $totalPrice,
             'status' => 'pending',
         ]);
@@ -61,9 +66,9 @@ class CheckoutController extends Controller
                 'gross_amount' => $totalPrice,
             ],
             'customer_details' => [
-                'first_name' => $request->customer_name,
-                'email' => $request->customer_email,
-                'phone' => $request->customer_phone,
+                'first_name' => $customerName,
+                'email' => $customerEmail,
+                'phone' => $customerPhone,
             ],
         ];
 

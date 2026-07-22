@@ -3,10 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Partner\AuthController as PartnerAuthController;
+use App\Http\Controllers\Partner\DashboardController as PartnerDashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\Auth\BuyerAuthController;
 
 // Rute User Area
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -18,10 +23,35 @@ Route::get('/payment/{order_id}', [\App\Http\Controllers\CheckoutController::cla
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 Route::get('/success/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle']);
+Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+Route::post('/logout', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-Route::get('/login', function () {
-    return redirect()->route('admin.login');
-})->name('login');
+    return redirect()->route('home');
+})->name('logout');
+
+Route::prefix('auth/google')->name('auth.google.')->group(function () {
+    Route::get('redirect', [GoogleAuthController::class, 'redirect'])->name('redirect');
+    Route::get('checkout/{event}', [GoogleAuthController::class, 'redirectForCheckout'])->name('checkout');
+    Route::get('callback', [GoogleAuthController::class, 'callback'])->name('callback');
+});
+
+Route::get('/login', [BuyerAuthController::class, 'showPortal'])->name('login');
+Route::get('/register', [BuyerAuthController::class, 'showRegister'])->name('register');
+Route::post('/login', [BuyerAuthController::class, 'login'])->name('login.post');
+Route::post('/register', [BuyerAuthController::class, 'register'])->name('register.post');
+
+Route::prefix('partner')->name('partner.')->group(function () {
+    Route::get('login', [PartnerAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [PartnerAuthController::class, 'login'])->name('login.post');
+    Route::post('logout', [PartnerAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware(['partner'])->group(function () {
+        Route::get('dashboard', [PartnerDashboardController::class, 'index'])->name('dashboard');
+    });
+});
 
 Route::prefix('admin')->name('admin.')->group(function () {
     // Login (public)

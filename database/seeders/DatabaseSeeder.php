@@ -24,6 +24,14 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
+        \App\Models\User::updateOrCreate([
+            'email' => 'partner@amikom.ac.id',
+        ], [
+            'name' => 'Partner Amikom',
+            'password' => bcrypt('password'),
+            'role' => 'partner',
+        ]);
+
         // 2. Insert Kategori Event
         $category = \App\Models\Category::updateOrCreate([
             'name' => 'Seminar IT',
