@@ -8,8 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
 </head>
-<body class="bg-indigo-900 text-white min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-md w-full bg-white text-slate-900 rounded-4xl p-8 shadow-2xl">
+<body class="bg-indigo-900 text-white  min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-white rounded-2xl text-slate-900 rounded-4xl p-8 shadow-2xl">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">AH</div>
             <h1 class="text-2xl font-black">Masuk sebagai Event Partner</h1>
