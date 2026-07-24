@@ -25,6 +25,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\User::updateOrCreate([
+            'email' => 'superadmin@amikom.ac.id',
+        ], [
+            'name' => 'Super Admin Amikom',
+            'password' => bcrypt('password'),
+            'role' => 'super_admin',
+            'status' => 'active',
+        ]);
+
+        \App\Models\User::updateOrCreate([
             'email' => 'partner@amikom.ac.id',
         ], [
             'name' => 'Partner Amikom',

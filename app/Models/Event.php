@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Storage;
 class Event extends Model
 {
     protected $fillable = [
-        'category_id', 'title', 'description', 'date',
-        'location', 'price', 'stock', 'poster_path'
+        'category_id', 'partner_id', 'title', 'description', 'date',
+        'location', 'price', 'stock', 'poster_path', 'status'
     ];
 
     protected $casts = [
@@ -20,6 +20,16 @@ class Event extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 
     protected static function booted()

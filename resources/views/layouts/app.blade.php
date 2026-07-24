@@ -50,6 +50,7 @@
                         </svg>
                     </summary>
                     <div class="absolute left-0 mt-3 w-full rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden z-50">
+                        <a href="{{ route('tickets.history') }}" class="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition">Riwayat Tiket</a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="w-full text-left px-5 py-3 text-sm font-semibold text-rose-600 hover:bg-rose-50 transition">Logout</button>
