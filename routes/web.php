@@ -60,23 +60,26 @@ Route::post('/login', [BuyerAuthController::class, 'login'])->name('login.post')
 Route::post('/register', [BuyerAuthController::class, 'register'])->name('register.post');
 
 Route::prefix('partner')->name('partner.')->group(function () {
+    // Public routes (login, register, logout)
     Route::get('login', [PartnerAuthController::class, 'showLogin'])->name('login');
     Route::post('login', [PartnerAuthController::class, 'login'])->name('login.post');
     Route::get('register', [PartnerAuthController::class, 'showRegister'])->name('register');
     Route::post('register', [PartnerAuthController::class, 'register'])->name('register.post');
     Route::post('logout', [PartnerAuthController::class, 'logout'])->name('logout');
 
-    // Dashboard partner bisa diakses langsung untuk preview frontend tanpa login dulu
-    Route::get('dashboard', [PartnerDashboardController::class, 'preview'])->name('dashboard');
+    // Protected routes (requires authentication with PartnerMiddleware)
+    Route::middleware('partner')->group(function () {
+        Route::get('dashboard', [PartnerDashboardController::class, 'index'])->name('dashboard');
 
-    // Partner event management pages for frontend preview / access
-    Route::get('events', [EventPartnerController::class, 'index'])->name('events.index');
-    Route::get('transactions', [PartnerTransactionController::class, 'index'])->name('transactions.index');
-    Route::get('rating', [PartnerRatingController::class, 'index'])->name('ratings.index');
-    Route::get('profile', [PartnerProfileController::class, 'index'])->name('profile.index');
-    Route::get('events/create', [EventPartnerController::class, 'create'])->name('events.create');
-    Route::post('events', [EventPartnerController::class, 'store'])->name('events.store');
-    Route::get('events/{event}/edit', [EventPartnerController::class, 'edit'])->name('events.edit');
+        // Partner event management pages
+        Route::get('events', [EventPartnerController::class, 'index'])->name('events.index');
+        Route::get('transactions', [PartnerTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('rating', [PartnerRatingController::class, 'index'])->name('ratings.index');
+        Route::get('profile', [PartnerProfileController::class, 'index'])->name('profile.index');
+        Route::get('events/create', [EventPartnerController::class, 'create'])->name('events.create');
+        Route::post('events', [EventPartnerController::class, 'store'])->name('events.store');
+        Route::get('events/{event}/edit', [EventPartnerController::class, 'edit'])->name('events.edit');
+    });
 });
 
 // ADMIN

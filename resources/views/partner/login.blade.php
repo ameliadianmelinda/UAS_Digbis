@@ -63,8 +63,16 @@
                 </div>
 
                 @if(session('error'))
-                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                        {{ session('error') }}
+                    <div class="bg-red-100 text-red-600 p-4 rounded-2xl font-semibold text-sm">
+                        <p>{{ session('error') }}</p>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="bg-red-100 text-red-600 p-4 rounded-2xl font-semibold text-sm">
+                        @foreach($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
                     </div>
                 @endif
 
@@ -72,7 +80,7 @@
                     @csrf
                     <label class="block">
                         <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Email</span>
-                        <input type="email" name="email" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" required>
+                        <input type="email" name="email" value="{{ old('email') }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100" required>
                     </label>
                     <label class="block">
                         <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Password</span>

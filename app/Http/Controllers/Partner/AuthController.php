@@ -30,8 +30,8 @@ class AuthController extends Controller
         $account = User::where('email', $credentials['email'])->first();
         if ($account && in_array($account->role, [User::ROLE_USER, User::ROLE_TENANT], true) && $account->isSuspended()) {
             return back()->withErrors([
-                'email' => 'Akun Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.',
-            ]);
+                'email' => 'Akun Event Partner Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.',
+            ])->onlyInput('email');
         }
 
         if (Auth::attempt(array_merge($credentials, [
@@ -43,7 +43,7 @@ class AuthController extends Controller
 
                 return back()->withErrors([
                     'email' => 'Akun ini bukan akun Tenant.',
-                ]);
+                ])->onlyInput('email');
             }
 
             $request->session()->regenerate();
@@ -53,7 +53,7 @@ class AuthController extends Controller
 
         return back()->withErrors([
             'email' => 'Email atau Password yang Anda berikan tidak terdaftar di database kami.',
-        ]);
+        ])->onlyInput('email');
     }
 
     public function register(Request $request)

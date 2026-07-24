@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -25,10 +26,10 @@ return new class extends Migration
             $table->string('status')->default('active')->after('poster_path');
         });
 
-        \DB::table('partners')
+        DB::table('partners')
             ->join('users', 'users.email', '=', 'partners.email')
             ->where('users.role', 'partner')
-            ->update(['partners.user_id' => \DB::raw('users.id')]);
+            ->update(['partners.user_id' => DB::raw('users.id')]);
     }
 
     public function down(): void
