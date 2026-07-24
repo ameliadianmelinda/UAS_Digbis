@@ -8,6 +8,10 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Partner\AuthController as PartnerAuthController;
 use App\Http\Controllers\Partner\DashboardController as PartnerDashboardController;
+use App\Http\Controllers\Partner\EventPartnerController;
+use App\Http\Controllers\Partner\TransactionController as PartnerTransactionController;
+use App\Http\Controllers\Partner\RatingController as PartnerRatingController;
+use App\Http\Controllers\Partner\ProfileController as PartnerProfileController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\GoogleAuthController;
@@ -62,11 +66,20 @@ Route::prefix('partner')->name('partner.')->group(function () {
     Route::post('register', [PartnerAuthController::class, 'register'])->name('register.post');
     Route::post('logout', [PartnerAuthController::class, 'logout'])->name('logout');
 
-    Route::middleware(['partner'])->group(function () {
-        Route::get('dashboard', [PartnerDashboardController::class, 'index'])->name('dashboard');
-    });
+    // Dashboard partner bisa diakses langsung untuk preview frontend tanpa login dulu
+    Route::get('dashboard', [PartnerDashboardController::class, 'preview'])->name('dashboard');
+
+    // Partner event management pages for frontend preview / access
+    Route::get('events', [EventPartnerController::class, 'index'])->name('events.index');
+    Route::get('transactions', [PartnerTransactionController::class, 'index'])->name('transactions.index');
+    Route::get('rating', [PartnerRatingController::class, 'index'])->name('ratings.index');
+    Route::get('profile', [PartnerProfileController::class, 'index'])->name('profile.index');
+    Route::get('events/create', [EventPartnerController::class, 'create'])->name('events.create');
+    Route::post('events', [EventPartnerController::class, 'store'])->name('events.store');
+    Route::get('events/{event}/edit', [EventPartnerController::class, 'edit'])->name('events.edit');
 });
 
+// ADMIN
 Route::prefix('admin')->name('admin.')->group(function () {
     // Login (public)
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
@@ -89,6 +102,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
+
+
+// SuperAdmin
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('login', [SuperAdminAuthController::class, 'showLogin'])->name('login');
     Route::post('login', [SuperAdminAuthController::class, 'login'])->name('login.post');
@@ -116,3 +132,8 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::put('profile/password', [SuperAdminProfileController::class, 'password'])->name('profile.password');
     });
 });
+
+
+
+// TENANT
+

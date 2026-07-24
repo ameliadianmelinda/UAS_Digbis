@@ -9,8 +9,21 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        return view('partner.dashboard', [
-            'partner' => $request->user(),
-        ]);
+        $partner = $request->user() ?? (object) [
+            'name' => 'Partner Demo',
+            'email' => 'partner@example.com',
+        ];
+
+        return view('partner.dashboard', compact('partner'));
+    }
+
+    public function preview()
+    {
+        $partner = (object) [
+            'name' => 'Partner Demo',
+            'email' => 'partner@example.com',
+        ];
+
+        return view('partner.dashboard', compact('partner'));
     }
 }
