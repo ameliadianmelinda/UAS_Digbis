@@ -12,7 +12,7 @@
     <div class="max-w-md w-full bg-white text-slate-900 rounded-4xl p-8 shadow-2xl">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">AH</div>
-            <h1 class="text-2xl font-black">Masuk sebagai Event Partner</h1>
+            <h1 class="text-2xl font-black">Masuk sebagai Admin</h1>
             <p class="text-slate-500">AmikomEventHub Dashboard untuk penyelenggara event</p>
         </div>
 
