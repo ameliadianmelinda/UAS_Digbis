@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Partner;
 use App\Models\Transaction;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -30,26 +31,27 @@ class DashboardController extends Controller
                 $monthlyRevenue[$transaction->created_at->format('Y-m')] += (int) $transaction->total_price;
             });
 
-        Partner::whereBetween('created_at', [$chartStart, $chartEnd])->get(['created_at'])
+        Partner::whereHas('user', fn ($query) => $query->where('role', User::ROLE_TENANT))
+            ->whereBetween('created_at', [$chartStart, $chartEnd])->get(['created_at'])
             ->each(function (Partner $partner) use (&$monthlyTenantRegistrations) {
                 $monthlyTenantRegistrations[$partner->created_at->format('Y-m')]++;
             });
 
         $activities = collect()
-            ->merge(Partner::latest()->take(3)->get()->map(fn (Partner $partner) => ['label' => 'Tenant baru mendaftar', 'subject' => $partner->name, 'date' => $partner->created_at]))
+            ->merge(Partner::whereHas('user', fn ($query) => $query->where('role', User::ROLE_TENANT))->latest()->take(3)->get()->map(fn (Partner $partner) => ['label' => 'Tenant baru mendaftar', 'subject' => $partner->name, 'date' => $partner->created_at]))
             ->merge(Event::latest()->take(3)->get()->map(fn (Event $event) => ['label' => 'Event baru dibuat', 'subject' => $event->title, 'date' => $event->created_at]))
             ->merge(Transaction::whereIn('status', $paidStatuses)->latest()->take(3)->get()->map(fn (Transaction $transaction) => ['label' => 'Tiket berhasil dibeli', 'subject' => $transaction->order_id, 'date' => $transaction->created_at]))
             ->sortByDesc('date')->take(8)->values();
 
         return view('superadmin.dashboard', [
-            'totalTenants' => Partner::count(),
+            'totalTenants' => Partner::whereHas('user', fn ($query) => $query->where('role', User::ROLE_TENANT))->count(),
             'totalEvents' => Event::count(),
             'totalTicketsSold' => Transaction::whereIn('status', $paidStatuses)->count(),
             'totalPlatformRevenue' => Transaction::whereIn('status', $paidStatuses)->sum('total_price'),
             'monthlyLabels' => $monthlyLabels,
             'monthlyRevenue' => array_values($monthlyRevenue),
             'monthlyTenantRegistrations' => array_values($monthlyTenantRegistrations),
-            'recentTenants' => Partner::latest()->take(5)->get(),
+            'recentTenants' => Partner::whereHas('user', fn ($query) => $query->where('role', User::ROLE_TENANT))->latest()->take(5)->get(),
             'recentEvents' => Event::with(['partner', 'category'])->latest()->take(5)->get(),
             'recentTransactions' => Transaction::with('event.partner')->latest()->take(5)->get(),
             'activities' => $activities,

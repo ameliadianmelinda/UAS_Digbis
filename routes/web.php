@@ -58,6 +58,8 @@ Route::post('/register', [BuyerAuthController::class, 'register'])->name('regist
 Route::prefix('partner')->name('partner.')->group(function () {
     Route::get('login', [PartnerAuthController::class, 'showLogin'])->name('login');
     Route::post('login', [PartnerAuthController::class, 'login'])->name('login.post');
+    Route::get('register', [PartnerAuthController::class, 'showRegister'])->name('register');
+    Route::post('register', [PartnerAuthController::class, 'register'])->name('register.post');
     Route::post('logout', [PartnerAuthController::class, 'logout'])->name('logout');
 
     Route::middleware(['partner'])->group(function () {
@@ -96,6 +98,8 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('users', [SuperAdminUserController::class, 'index'])->name('users.index');
         Route::get('users/{user}', [SuperAdminUserController::class, 'show'])->name('users.show');
+        Route::post('users/{user}/suspend', [SuperAdminUserController::class, 'suspend'])->name('users.suspend');
+        Route::post('users/{user}/activate', [SuperAdminUserController::class, 'activate'])->name('users.activate');
         Route::get('tenants', [SuperAdminTenantController::class, 'index'])->name('tenants.index');
         Route::get('tenants/{partner}', [SuperAdminTenantController::class, 'show'])->name('tenants.show');
         Route::post('tenants/{partner}/suspend', [SuperAdminTenantController::class, 'suspend'])->name('tenants.suspend');

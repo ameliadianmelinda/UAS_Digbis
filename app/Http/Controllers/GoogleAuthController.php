@@ -37,8 +37,12 @@ class GoogleAuthController extends Controller
             'email' => $googleUser->getEmail(),
         ]);
 
-        if ($user->exists && $user->role !== 'user') {
-            return redirect()->route('login')->with('error', 'Email ini terdaftar sebagai admin atau partner. Gunakan login yang sesuai.');
+        if ($user->exists && $user->isSuspended()) {
+            return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.');
+        }
+
+        if ($user->exists && $user->role !== User::ROLE_USER) {
+            return redirect()->route('login')->with('error', 'Email ini terdaftar untuk akses internal. Gunakan login yang sesuai.');
         }
 
         $user->name = $googleUser->getName() ?: $googleUser->getNickname() ?: 'Google User';
@@ -48,7 +52,8 @@ class GoogleAuthController extends Controller
 
         if (! $user->exists) {
             $user->password = bcrypt(Str::random(32));
-            $user->role = 'user';
+            $user->role = User::ROLE_USER;
+            $user->status = User::STATUS_ACTIVE;
         }
 
         $user->save();

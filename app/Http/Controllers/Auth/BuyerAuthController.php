@@ -28,7 +28,17 @@ class BuyerAuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $account = User::where('email', $credentials['email'])->first();
+        if ($account && in_array($account->role, [User::ROLE_USER, User::ROLE_TENANT], true) && $account->isSuspended()) {
+            return back()->withErrors([
+                'email' => 'Akun Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.',
+            ])->onlyInput('email');
+        }
+
+        if (Auth::attempt(array_merge($credentials, [
+            'role' => User::ROLE_USER,
+            'status' => User::STATUS_ACTIVE,
+        ]), $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('home'));
         }
@@ -48,7 +58,8 @@ class BuyerAuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
-            'role' => 'buyer',
+            'role' => User::ROLE_USER,
+            'status' => User::STATUS_ACTIVE,
         ]);
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan masuk menggunakan email dan password Anda.');

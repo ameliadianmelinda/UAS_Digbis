@@ -15,13 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Akun Admin Utama
+        // 1. Akun Super Admin Utama
         \App\Models\User::updateOrCreate([
             'email' => 'admin@amikom.ac.id',
         ], [
             'name' => 'Admin Amikom',
             'password' => bcrypt('password'),
-            'role' => 'admin',
+            'role' => \App\Models\User::ROLE_SUPER_ADMIN,
+            'status' => \App\Models\User::STATUS_ACTIVE,
         ]);
 
         \App\Models\User::updateOrCreate([
@@ -29,16 +30,25 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Super Admin Amikom',
             'password' => bcrypt('password'),
-            'role' => 'super_admin',
-            'status' => 'active',
+            'role' => \App\Models\User::ROLE_SUPER_ADMIN,
+            'status' => \App\Models\User::STATUS_ACTIVE,
         ]);
 
-        \App\Models\User::updateOrCreate([
+        $tenantUser = \App\Models\User::updateOrCreate([
             'email' => 'partner@amikom.ac.id',
         ], [
-            'name' => 'Partner Amikom',
+            'name' => 'Tenant Amikom',
             'password' => bcrypt('password'),
-            'role' => 'partner',
+            'role' => \App\Models\User::ROLE_TENANT,
+            'status' => \App\Models\User::STATUS_ACTIVE,
+        ]);
+
+        \App\Models\Partner::updateOrCreate([
+            'user_id' => $tenantUser->id,
+        ], [
+            'name' => 'Amikom Event Organization',
+            'email' => $tenantUser->email,
+            'status' => \App\Models\User::STATUS_ACTIVE,
         ]);
 
         // 2. Insert Kategori Event

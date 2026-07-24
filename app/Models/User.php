@@ -14,6 +14,12 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    public const ROLE_SUPER_ADMIN = 'super_admin';
+    public const ROLE_TENANT = 'tenant';
+    public const ROLE_USER = 'user';
+    public const STATUS_ACTIVE = 'Active';
+    public const STATUS_SUSPENDED = 'Suspended';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -28,5 +34,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->status === self::STATUS_SUSPENDED;
+    }
+
+    public function partner()
+    {
+        return $this->hasOne(Partner::class);
     }
 }

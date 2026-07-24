@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\AccountStatusMiddleware;
 use App\Http\Middleware\PartnerMiddleware;
 use App\Http\Middleware\SuperAdminMiddleware;
 use Illuminate\Foundation\Application;
@@ -14,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [AccountStatusMiddleware::class]);
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'partner' => PartnerMiddleware::class,

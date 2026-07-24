@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,11 +21,14 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            if (Auth::user()?->role !== 'admin') {
+        if (Auth::attempt(array_merge($credentials, [
+            'role' => User::ROLE_SUPER_ADMIN,
+            'status' => User::STATUS_ACTIVE,
+        ]))) {
+            if (Auth::user()?->role !== User::ROLE_SUPER_ADMIN) {
                 Auth::logout();
                 return back()->withErrors([
-                    'email' => 'Akun ini bukan akun admin.',
+                    'email' => 'Akun ini bukan akun Super Admin.',
                 ]);
             }
 

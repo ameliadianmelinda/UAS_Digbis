@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +14,11 @@ class CheckoutController extends Controller
 {
     public function create(Event $event)
     {
+        $user = Auth::user();
+        if ($user instanceof User && $user->isSuspended()) {
+            return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.');
+        }
+
         // Mengambil daftar kategori untuk keperluan menu footer
      $categories = \App\Models\Category::all();
 
@@ -21,6 +27,11 @@ class CheckoutController extends Controller
 
     public function store(Request $request, Event $event)
     {
+        $user = Auth::user();
+        if ($user instanceof User && $user->isSuspended()) {
+            return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.');
+        }
+
         // 1. Validasi Input Kredensial Pelanggan
         $request->validate([
             'customer_name' => 'required|string|max:255',

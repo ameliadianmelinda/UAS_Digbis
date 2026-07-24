@@ -16,7 +16,7 @@
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-700 text-white flex items-center justify-center font-black text-xl">AH</div>
                 <div>
-                    <h1 class="text-2xl font-black">Dashboard Event Partner</h1>
+                    <h1 class="text-2xl font-black">Dashboard Tenant</h1>
                     <p class="text-slate-500">AmikomEventHub partner workspace</p>
                 </div>
             </div>
@@ -30,7 +30,7 @@
             <section class="bg-white rounded-4xl p-8 shadow-sm border border-slate-100">
                 <p class="text-sm font-black tracking-[0.2em] text-indigo-500 uppercase">Ringkasan Akun</p>
                 <h2 class="text-4xl font-black mt-3">Halo, {{ $partner->name }}</h2>
-                <p class="text-slate-500 mt-3">Kamu masuk sebagai event partner dan bisa mengelola event serta data transaksi dari menu admin yang sudah ada.</p>
+                <p class="text-slate-500 mt-3">Kamu masuk sebagai Tenant dan bisa mengelola event serta data transaksi dari menu yang sudah ada.</p>
 
                 <div class="grid md:grid-cols-2 gap-4 mt-8">
                     <div class="rounded-3xl bg-slate-50 p-5 border border-slate-100">
