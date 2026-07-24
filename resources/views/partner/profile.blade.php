@@ -8,7 +8,7 @@
 <div class="space-y-6">
     <div>
         <h1 class="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Profil Organisasi</h1>
-        <p class="mt-2 text-sm text-slate-500">Kelola informasi akun organisasi Anda secara aman dan tetap fokus pada tampilan frontend.</p>
+        <p class="mt-2 text-sm text-slate-500">Kelola Informasi akun organisasi Anda secara aman dan tetap fokus pada tampilan frontend.</p>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
