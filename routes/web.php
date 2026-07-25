@@ -28,10 +28,12 @@ use App\Http\Controllers\SuperAdmin\UserController as SuperAdminUserController;
 // Rute User Area
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/events/{event}', [\App\Http\Controllers\EventController::class, 'show'])->name('events.show');
+Route::get('/events/{event}/availability', [\App\Http\Controllers\EventController::class, 'availability'])->name('events.availability');
 Route::get('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('transactions.index');
 Route::get('/payment/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/checkout/status/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'status'])->name('checkout.status');
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 Route::get('/success/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle']);
@@ -74,11 +76,16 @@ Route::prefix('partner')->name('partner.')->group(function () {
         // Partner event management pages
         Route::get('events', [EventPartnerController::class, 'index'])->name('events.index');
         Route::get('transactions', [PartnerTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('transactions/export', [PartnerTransactionController::class, 'export'])->name('transactions.export');
+        Route::get('transactions/{transaction}', [PartnerTransactionController::class, 'show'])->name('transactions.show');
         Route::get('rating', [PartnerRatingController::class, 'index'])->name('ratings.index');
         Route::get('profile', [PartnerProfileController::class, 'index'])->name('profile.index');
+        Route::put('profile', [PartnerProfileController::class, 'update'])->name('profile.update');
         Route::get('events/create', [EventPartnerController::class, 'create'])->name('events.create');
         Route::post('events', [EventPartnerController::class, 'store'])->name('events.store');
         Route::get('events/{event}/edit', [EventPartnerController::class, 'edit'])->name('events.edit');
+        Route::patch('events/{event}', [EventPartnerController::class, 'update'])->name('events.update');
+        Route::delete('events/{event}', [EventPartnerController::class, 'destroy'])->name('events.destroy');
     });
 });
 

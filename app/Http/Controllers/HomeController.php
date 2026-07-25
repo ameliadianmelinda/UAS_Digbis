@@ -18,9 +18,12 @@ class HomeController extends Controller
             $partners = \App\Models\Partner::orderBy('id', 'desc')->get();
 
             // 2. Buat kueri dasar untuk mengambil event:
-            // - Gunakan Eager loading `category`
-            // - Hanya tampilkan kegiatan dengan jadwal yang belum kedaluwarsa (>= hari ini)
-            $query = Event::with('category')
+            // - Gunakan Eager loading `category` dan `partner`
+            // - Hitung tiket yang sudah terjual untuk status success/settlement
+            $query = Event::with(['category', 'partner'])
+                          ->withCount(['transactions as sold_tickets_count' => function ($query) {
+                              $query->whereIn('status', ['settlement', 'success']);
+                          }])
                           ->where('date', '>=', now())
                           ->orderBy('date', 'asc');
 

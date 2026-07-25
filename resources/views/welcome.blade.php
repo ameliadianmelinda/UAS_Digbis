@@ -78,26 +78,52 @@
         <!-- Zona Menampilkan Grid List Event -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($events as $event)
-                <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                    <div class="relative overflow-hidden aspect-3/4">
-                        <img src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) ? asset('storage/' . $event->poster_path) : 'https://placehold.co/200x600' }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div
-                            class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
+                <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col">
+                    <div class="relative overflow-hidden h-56 sm:h-60">
+                        @php
+                            $eventImage = null;
+                            if (!empty($event->poster_path) && file_exists(public_path($event->poster_path))) {
+                                $eventImage = asset($event->poster_path);
+                            }
+                            $partnerLogo = $event->partner?->logo_url ?? null;
+                        @endphp
+                        <img src="{{ $eventImage ?? 'https://placehold.co/600x400?text=No+Image' }}" alt="{{ $event->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        @if($partnerLogo)
+                            <img src="{{ $partnerLogo }}" alt="Partner logo" class="absolute top-3 right-3 h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm">
+                        @endif
+                        @if($event->stock <= 0)
+                            <div class="absolute top-3 left-3 rounded-full bg-rose-600 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-white shadow-lg">Sold Out</div>
+                        @endif
+                        <div class="absolute top-4 right-3 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
                             {{ $event->category->name }}
                         </div>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">{{ $event->title }}</h3>
-                        <div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>{{ \Carbon\Carbon::parse($event->date)->format('d-m-Y H:i') }}</span>
+                    <div class="p-6 flex-1 flex flex-col gap-4">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-xl font-bold group-hover:text-indigo-600 transition line-clamp-2">{{ $event->title }}</h3>
+                                @php
+                                    $capacity = max($event->stock ?? 0, 0);
+                                    $isSoldOutCard = ($event->sold_tickets_count ?? 0) >= $capacity && $capacity > 0;
+                                @endphp
+                                @if($isSoldOutCard || $event->stock <= 0)
+                                    <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">
+                                        SOLD OUT
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>{{ \Carbon\Carbon::parse($event->date)->format('d-m-Y H:i') }}</span>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center pt-4 border-t">
+                        <div class="mt-auto flex items-center justify-between gap-4 pt-4 border-t">
                             <span class="text-2xl font-black text-indigo-600">Rp {{ number_format($event->price, 0, ',', '.') }}</span>
-                            <a href="{{ route('events.show', $event->id) }}" class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Lihat Detail</a>
+                            <a href="{{ route('events.show', $event->id) }}" class="inline-flex h-11 items-center justify-center px-5 rounded-xl bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-600 hover:text-white transition">
+                                Lihat Detail
+                            </a>
                         </div>
                     </div>
                 </div>

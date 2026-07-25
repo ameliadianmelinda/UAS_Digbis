@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,14 +19,24 @@ class EventPartnerController extends Controller
             return null;
         }
 
-        return Storage::disk('public')->exists($posterPath)
-            ? asset('storage/' . $posterPath)
+        return file_exists(public_path($posterPath))
+            ? asset($posterPath)
             : null;
     }
 
     public function index(Request $request)
     {
-        $query = Event::with('category')->latest('created_at');
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $partner = $user?->partner()->first();
+
+        $query = Event::with('category')
+            ->when($partner?->id, function ($query, $partnerId) {
+                $query->where('partner_id', $partnerId);
+            }, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->latest('created_at');
 
         $search = trim((string) $request->input('search', ''));
         $selectedCategory = trim((string) $request->input('category', ''));
@@ -64,6 +76,7 @@ class EventPartnerController extends Controller
             }
 
             return [
+                'id' => $event->id,
                 'name' => $event->title,
                 'subtitle' => Str::limit(strip_tags($event->description ?? ''), 48),
                 'category' => $event->category?->name ?? '-',
@@ -73,7 +86,7 @@ class EventPartnerController extends Controller
                 'capacity' => $capacity,
                 'status' => $status,
                 'revenue' => 'Rp ' . number_format($event->transactions()->whereIn('status', ['settlement', 'success'])->sum('total_price'), 0, ',', '.'),
-                'banner' => $event->poster_path ? Storage::url($event->poster_path) : null,
+                'banner' => $this->buildPosterUrl($event->poster_path),
             ];
         });
 
@@ -109,6 +122,16 @@ class EventPartnerController extends Controller
 
     public function store(Request $request)
     {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $partner = $user?->partner()->first();
+
+        if (!$partner) {
+            return back()->withErrors([
+                'partner' => 'Akun partner tidak ditemukan untuk user yang sedang login.',
+            ])->withInput();
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|string|exists:categories,name',
@@ -122,12 +145,22 @@ class EventPartnerController extends Controller
 
         $posterPath = null;
         if ($request->hasFile('poster')) {
-            $posterPath = $request->file('poster')->store('events/posters', 'public');
+            $posterFile = $request->file('poster');
+            $posterName = time() . '_' . Str::slug(pathinfo($posterFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $posterFile->getClientOriginalExtension();
+            $posterDirectory = public_path('uploads/events/posters');
+
+            if (!File::exists($posterDirectory)) {
+                File::makeDirectory($posterDirectory, 0755, true);
+            }
+
+            $posterFile->move($posterDirectory, $posterName);
+            $posterPath = 'uploads/events/posters/' . $posterName;
         }
 
         $category = Category::where('name', $validated['category'])->first();
 
         Event::create([
+            'partner_id' => $partner->id,
             'title' => $validated['name'],
             'category_id' => $category?->id,
             'description' => $validated['description'],
@@ -141,14 +174,69 @@ class EventPartnerController extends Controller
         return redirect()->route('partner.events.index')->with('success', 'Event berhasil dibuat!');
     }
 
+    public function update(Request $request, Event $event)
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $partner = $user?->partner()->first();
+
+        if (!$partner || $event->partner_id !== $partner->id) {
+            return redirect()->route('partner.events.index')->with('error', 'Anda tidak memiliki izin untuk mengubah event ini.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|exists:categories,name',
+            'event_datetime' => 'required|date_format:Y-m-d\TH:i',
+            'location' => 'required|string|max:255',
+            'ticket_price' => 'required|numeric|min:0',
+            'ticket_quantity' => 'required|integer|min:1',
+            'description' => 'required|string',
+            'poster' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:5120',
+        ]);
+
+        $posterPath = $event->poster_path;
+        if ($request->hasFile('poster')) {
+            if ($posterPath && file_exists(public_path($posterPath))) {
+                File::delete(public_path($posterPath));
+            }
+
+            $posterFile = $request->file('poster');
+            $posterName = time() . '_' . Str::slug(pathinfo($posterFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $posterFile->getClientOriginalExtension();
+            $posterDirectory = public_path('uploads/events/posters');
+
+            if (!File::exists($posterDirectory)) {
+                File::makeDirectory($posterDirectory, 0755, true);
+            }
+
+            $posterFile->move($posterDirectory, $posterName);
+            $posterPath = 'uploads/events/posters/' . $posterName;
+        }
+
+        $category = Category::where('name', $validated['category'])->first();
+
+        $event->update([
+            'title' => $validated['name'],
+            'category_id' => $category?->id,
+            'description' => $validated['description'],
+            'date' => $validated['event_datetime'],
+            'location' => $validated['location'],
+            'price' => $validated['ticket_price'],
+            'stock' => $validated['ticket_quantity'],
+            'poster_path' => $posterPath,
+        ]);
+
+        return redirect()->route('partner.events.index')->with('success', 'Event berhasil diperbarui!');
+    }
+
     public function edit(Event $event)
     {
         $categories = Category::query()
-            ->select('id', 'name')
+            ->select('name')
             ->get()
             ->map(function ($category) {
                 return [
-                    'value' => $category->id,
+                    'value' => $category->name,
                     'label' => $category->name,
                 ];
             })
@@ -162,4 +250,28 @@ class EventPartnerController extends Controller
         ]);
     }
 
+    public function destroy(Request $request, Event $event)
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $partner = $user?->partner()->first();
+
+        if (!$partner || $event->partner_id !== $partner->id) {
+            return redirect()->route('partner.events.index')->with('error', 'Anda tidak memiliki izin untuk menghapus event ini.');
+        }
+
+        if ($request->has('_token')) {
+            $request->validate([
+                '_token' => 'required',
+            ]);
+        }
+
+        if ($event->poster_path && file_exists(public_path($event->poster_path))) {
+            File::delete(public_path($event->poster_path));
+        }
+
+        $event->delete();
+
+        return redirect()->route('partner.events.index')->with('success', 'Event berhasil dihapus.');
+    }
 }

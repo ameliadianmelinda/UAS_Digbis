@@ -114,16 +114,20 @@
                             <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-slate-800">{{ data_get($event, 'revenue', 'Rp 0') }}</td>
                             <td class="whitespace-nowrap px-4 py-4">
                                 <div class="flex items-center gap-2">
-                                    <a href="#" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" title="Edit">
+                                    <a href="{{ route('partner.events.edit', ['event' => data_get($event, 'id')]) }}" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900" title="Edit">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.5-9.5a2 2 0 113 3L12 15l-4 1 1-4 7.5-7.5z"></path>
                                         </svg>
                                     </a>
-                                    <a href="#" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-rose-200 text-rose-600 transition hover:bg-rose-50" title="Hapus">
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-4 0H7l1-2a2 2 0 012-1h4a2 2 0 012 1l1 2z"></path>
-                                        </svg>
-                                    </a>
+                                    <form action="{{ route('partner.events.destroy', ['event' => data_get($event, 'id')]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus event ini? Semua data terkait akan dihapus permanen.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-rose-200 text-rose-600 transition hover:bg-rose-50" title="Hapus">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-4 0H7l1-2a2 2 0 012-1h4a2 2 0 012 1l1 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -145,12 +149,6 @@
         </div>
     </div>
 
-    @if ($events instanceof \Illuminate\Contracts\Pagination\Paginator || $events instanceof \Illuminate\Pagination\LengthAwarePaginator)
-        <div class="flex justify-center">
-            <div class="rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-                {{ $events->links('pagination::tailwind') }}
-            </div>
-        </div>
-    @endif
+
 </div>
 @endsection

@@ -3,11 +3,27 @@
 namespace App\Http\Controllers\Partner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
+use Illuminate\Support\Facades\Auth;
 
 class RatingController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        $partner = $user?->partner()->first();
+
+        $partnerEventTitles = Event::query()
+            ->when($partner?->id, function ($query, $partnerId) {
+                $query->where('partner_id', $partnerId);
+            }, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->pluck('title')
+            ->filter()
+            ->values();
+
         $reviews = collect([
             [
                 'participant' => 'Raka Pratama',
@@ -51,7 +67,9 @@ class RatingController extends Controller
                 'review' => 'Secara umum lumayan, tapi beberapa bagian teknis masih terasa kurang siap dan belum terorganisir.',
                 'date' => '19 Jul 2026',
             ],
-        ]);
+        ])->filter(function ($review) use ($partnerEventTitles) {
+            return $partnerEventTitles->isEmpty() ? false : $partnerEventTitles->contains($review['event']);
+        })->values();
 
         return view('partner.rating', compact('reviews'));
     }

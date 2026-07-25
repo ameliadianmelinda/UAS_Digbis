@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Transaction;
 
 class Event extends Model
 {
@@ -30,6 +31,33 @@ class Event extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function soldTicketsCount(): int
+    {
+        return $this->transactions()
+            ->whereIn('status', ['settlement', 'success'])
+            ->count();
+    }
+
+    public function pendingReservationsCount(): int
+    {
+        $expirationTime = now()->subMinutes(Transaction::PENDING_EXPIRY_MINUTES);
+
+        return $this->transactions()
+            ->where('status', Transaction::STATUS_PENDING)
+            ->where('created_at', '>', $expirationTime)
+            ->count();
+    }
+
+    public function availableTicketsCount(): int
+    {
+        return max($this->stock - $this->soldTicketsCount() - $this->pendingReservationsCount(), 0);
+    }
+
+    public function isSoldOut(): bool
+    {
+        return $this->availableTicketsCount() <= 0;
     }
 
     protected static function booted()

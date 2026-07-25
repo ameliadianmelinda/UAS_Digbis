@@ -63,7 +63,6 @@
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($reviews as $review)
                         @php
-                            $rating = (int) data_get($review, 'rating', 0);
                             $reviewText = (string) data_get($review, 'review', '');
                             $shortReview = strlen($reviewText) > 80 ? substr($reviewText, 0, 80) . '...' : $reviewText;
                         @endphp
@@ -73,11 +72,7 @@
                             <td class="whitespace-nowrap px-4 py-4">
                                 <div class="flex items-center gap-1 text-amber-400">
                                     @for ($i = 1; $i <= 5; $i++)
-                                        @if ($i <= $rating)
-                                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.955a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.446a1 1 0 00-.364 1.118l1.287 3.955c.3.921-.755 1.688-1.538 1.118L10 2.927z"></path></svg>
-                                        @else
-                                            <svg class="h-4 w-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-                                        @endif
+                                        <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.955a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.446a1 1 0 00-.364 1.118l1.287 3.955c.3.921-.755 1.688-1.538 1.118L10 2.927z"></path></svg>
                                     @endfor
                                 </div>
                             </td>
@@ -99,16 +94,6 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <div class="flex justify-center">
-        <div class="rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-            <nav class="flex items-center gap-2 text-sm text-slate-600">
-                <span class="rounded-lg px-3 py-1.5 hover:bg-slate-100">1</span>
-                <span class="rounded-lg bg-indigo-600 px-3 py-1.5 text-white">2</span>
-                <span class="rounded-lg px-3 py-1.5 hover:bg-slate-100">3</span>
-            </nav>
         </div>
     </div>
 </div>

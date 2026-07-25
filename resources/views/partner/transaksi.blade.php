@@ -14,7 +14,7 @@
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 bg-white p-4 sm:p-5">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <form method="GET" action="#" class="flex flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <form method="GET" action="{{ route('partner.transactions.index') }}" class="flex flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <label class="flex-1 min-w-64 sm:min-w-88">
                         <span class="sr-only">Search transaksi</span>
                         <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 shadow-sm">
@@ -24,6 +24,7 @@
                             <input
                                 type="text"
                                 name="search"
+                                value="{{ old('search', $search ?? '') }}"
                                 placeholder="Cari Order ID, Customer, atau Nama Event"
                                 class="w-full border-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                             >
@@ -34,9 +35,9 @@
                         Cari
                     </button>
 
-                    <button type="button" class="rounded-xl border  bg-indigo-600 border-slate-200 text-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-indigo-700">
+                    <a href="{{ route('partner.transactions.export', ['search' => $search]) }}" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
                         Export
-                    </button>
+                    </a>
                 </form>
             </div>
         </div>
@@ -70,7 +71,11 @@
                             ];
                         @endphp
                         <tr class="h-20 bg-white transition hover:bg-slate-50">
-                            <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-slate-800">{{ data_get($transaction, 'order_id') }}</td>
+                            <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-slate-800">
+                                <a href="{{ route('partner.transactions.show', $transaction['id']) }}" class="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline">
+                                    {{ data_get($transaction, 'order_id') }}
+                                </a>
+                            </td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-slate-700">{{ data_get($transaction, 'event_name') }}</td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-slate-700">{{ data_get($transaction, 'customer') }}</td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-slate-700">{{ data_get($transaction, 'email') }}</td>
@@ -83,9 +88,9 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-slate-700">{{ data_get($transaction, 'date') }}</td>
                             <td class="whitespace-nowrap px-4 py-4">
-                                <button type="button" class="inline-flex items-center rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100">
+                                <a href="{{ route('partner.transactions.show', $transaction['id']) }}" class="inline-flex items-center rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 hover:text-indigo-800">
                                     Detail
-                                </button>
+                                </a>
                             </td>
                         </tr>
                     @empty
@@ -106,14 +111,5 @@
         </div>
     </div>
 
-    <div class="flex justify-center">
-        <div class="rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-            <nav class="flex items-center gap-2 text-sm text-slate-600">
-                <span class="rounded-lg px-3 py-1.5 hover:bg-slate-100">1</span>
-                <span class="rounded-lg bg-indigo-600 px-3 py-1.5 text-white">2</span>
-                <span class="rounded-lg px-3 py-1.5 hover:bg-slate-100">3</span>
-            </nav>
-        </div>
-    </div>
 </div>
 @endsection

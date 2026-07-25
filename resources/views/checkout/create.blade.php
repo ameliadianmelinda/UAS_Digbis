@@ -80,6 +80,7 @@
              <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8">📦 Data Pemesan</h3>
              <form action="{{ route('checkout.store', $event->id) }}" method="POST" class="space-y-6">
                  @csrf
+                 <input type="hidden" name="reservation_order_id" value="{{ $transaction->order_id ?? '' }}">
                  <div>
                      <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama
                          Lengkap</label>

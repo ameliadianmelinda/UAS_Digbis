@@ -10,12 +10,24 @@
         </div>
         <h2 class="text-3xl font-black mb-4">Terima Kasih!</h2>
         <p class="text-slate-500 mb-8 leading-relaxed">
-            Pembayaran untuk pesanan <strong>{{ $transaction->order_id }}</strong> sedang diproses atau telah berhasil.
+            Pembayaran untuk pesanan <strong>{{ $transaction->order_id }}</strong>
+            @if(isset($paymentState) && $paymentState === 'pending')
+                masih dalam proses. Silakan tunggu beberapa saat hingga pembayaran berhasil.
+            @else
+                sedang diproses atau telah berhasil.
+            @endif
             E-Ticket akan dikirim ke email Anda (<strong>{{ $transaction->customer_email }}</strong>) setelah pembayaran terkonfirmasi lunas.
         </p>
-        <a href="{{ route('home') }}" class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
-            Kembali ke Beranda
-        </a>
+        <div class="flex flex-col gap-4 items-center">
+            @if(isset($paymentState) && $paymentState === 'pending')
+                <a href="{{ route('events.show', $transaction->event) }}" class="inline-block px-8 py-4 bg-slate-500 text-white rounded-xl font-bold hover:bg-slate-600 transition">
+                    Kembali ke Event
+                </a>
+            @endif
+            <a href="{{ route('home') }}" class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
+                Kembali ke Beranda
+            </a>
+        </div>
     </div>
 </main>
 @endsection

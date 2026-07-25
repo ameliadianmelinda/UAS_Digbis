@@ -58,7 +58,8 @@
                     </div>
                 </details>
             @else
-                <a href="{{ route('login') }}" class="px-5 py-2.5 rounded-xl font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">Masuk/Daftar</a>
+                <a href="{{ route('login') }}" class="px-5 py-2.5 rounded-xl font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition">Masuk</a>
+                <a href="{{ route('login', ['tab' => 'daftar']) }}" class="px-5 py-2.5 rounded-xl font-semibold border border-slate-300 text-slate-800 bg-white hover:bg-slate-100 transition">Daftar</a>
             @endauth
         </div>
     </nav>

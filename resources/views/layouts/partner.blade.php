@@ -61,5 +61,6 @@
     <main class="flex-1 p-8 lg:p-10 overflow-y-auto w-full">
         @yield('content')
     </main>
+    @stack('scripts')
 </body>
 </html>

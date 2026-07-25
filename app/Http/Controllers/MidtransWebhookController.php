@@ -54,32 +54,40 @@ class MidtransWebhookController extends Controller
         }
 
         // Mapping status Midtrans
-        if ($transactionStatus == 'capture') {
+        if (in_array($transactionStatus, ['capture', 'settlement'])) {
+            // Before marking success, ensure reservation hasn't expired
+            $expiryTime = now()->subMinutes(\App\Models\Transaction::PENDING_EXPIRY_MINUTES);
+            if ($transaction->status === Transaction::STATUS_PENDING && $transaction->created_at < $expiryTime) {
+                // Reservation expired before payment confirmation
+                $transaction->releaseReservation();
+                $transaction->save();
 
-            if ($fraudStatus == 'challenge') {
-                $transaction->status = 'challenge';
+                Log::info('Transaction expired before webhook success: ' . $orderId);
+
+                return response()->json(['message' => 'Reservation expired'], 200);
             }
-            else if ($fraudStatus == 'accept') {
+
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'challenge') {
+                    $transaction->status = 'challenge';
+                } else if ($fraudStatus == 'accept') {
+                    $transaction->status = 'success';
+                    $this->processSuccess($transaction);
+                }
+            } else {
                 $transaction->status = 'success';
                 $this->processSuccess($transaction);
             }
 
-        }
-        else if ($transactionStatus == 'settlement') {
-
-            $transaction->status = 'success';
-            $this->processSuccess($transaction);
-
-        }
-        else if (in_array($transactionStatus, ['cancel', 'deny', 'expire'])) {
-
-            $transaction->status = 'failed';
-
+        } else if (in_array($transactionStatus, ['cancel', 'deny', 'expire'])) {
+            if (strtolower($transaction->status) === Transaction::STATUS_PENDING) {
+                $transaction->releaseReservation();
+            } else {
+                $transaction->status = Transaction::STATUS_FAILED;
+            }
         }
         else if ($transactionStatus == 'pending') {
-
-            $transaction->status = 'pending';
-
+            $transaction->status = Transaction::STATUS_PENDING;
         }
 
         // Simpan perubahan
@@ -98,20 +106,17 @@ class MidtransWebhookController extends Controller
     private function processSuccess(Transaction $transaction)
     {
         $event = $transaction->event;
-
-        // Jika tiket masih ada dan terhubung dengan data event, kurangi jumlahnya sebanyak 1
-        if ($event && $event->stock > 0) {
-            $event->stock = $event->stock - 1;
-            $event->save();
-
-            // Mengirimkan email E-Ticket ke pelanggan
+        // Do NOT decrement `stock` here. `stock` represents event capacity and
+        // sold tickets are derived from transactions with status 'success'/'settlement'.
+        // Only send the e-ticket email and log.
+        if ($event) {
             try {
                 \Illuminate\Support\Facades\Mail::to($transaction->customer_email)->send(new \App\Mail\EventTicketMail($transaction));
             } catch (\Exception $e) {
                 Log::error('Gagal mengirim email E-Ticket: ' . $e->getMessage());
             }
         } else {
-            Log::warning('Stock habis setelah pembayaran berhasil (Perlu proses refund opsional). Order: ' . $transaction->order_id);
+            Log::warning('Event not found for successful transaction. Order: ' . $transaction->order_id);
         }
     }
 }

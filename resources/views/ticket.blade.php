@@ -34,6 +34,17 @@
         <div class="bg-white text-slate-900 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
             <!-- Ticket Header -->
             <div class="p-8 bg-indigo-50 border-b-4 border-dashed border-indigo-100 text-center relative">
+                @php
+                    $partnerLogo = null;
+                    if (isset($event) && $event->partner?->logo_url) {
+                        $partnerLogo = $event->partner->logo_url;
+                    } elseif (isset($partner) && $partner->logo_url) {
+                        $partnerLogo = $partner->logo_url;
+                    }
+                @endphp
+                @if($partnerLogo)
+                    <img src="{{ $partnerLogo }}" alt="Partner logo" class="absolute top-4 right-4 h-14 w-14 rounded-full bg-white p-1 object-cover shadow">
+                @endif
                 <p class="text-indigo-600 font-bold uppercase tracking-widest text-xs mb-2">E-Ticket Resmi</p>
                 <h2 class="text-2xl font-black leading-tight">Jazz Night 2024: A Celebration</h2>
 

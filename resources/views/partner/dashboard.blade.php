@@ -4,55 +4,25 @@
 
 @section('content')
     @php
-        $partnerName = $partner->name ?? 'Partner';
-        $organization = 'AmikomEventHub Creative Studio';
-
-        $stats = [
-            ['label' => 'Total Event', 'value' => '24', 'trend' => '+4', 'icon' => 'calendar'],
-            ['label' => 'Event Aktif', 'value' => '12', 'trend' => '+2', 'icon' => 'play'],
-            ['label' => 'Event Selesai', 'value' => '8', 'trend' => '+1', 'icon' => 'check'],
-            ['label' => 'Total Tiket Terjual', 'value' => '1.420', 'trend' => '+12%', 'icon' => 'ticket'],
-            ['label' => 'Total Pendapatan', 'value' => 'Rp 184,5 jt', 'trend' => '+18%', 'icon' => 'currency'],
-        ];
-
-        $latestEvents = [
-            ['name' => 'Digital Innovation Summit 2026', 'date' => '12 Agustus 2026', 'tickets' => '320 tiket'],
-            ['name' => 'Startup Meetup by Amikom', 'date' => '28 Agustus 2026', 'tickets' => '210 tiket'],
-            ['name' => 'Workshop UI/UX for Beginners', 'date' => '03 September 2026', 'tickets' => '145 tiket'],
-            ['name' => 'Music Festival Campus Night', 'date' => '10 September 2026', 'tickets' => '480 tiket'],
-            ['name' => 'Youngpreneur Networking', 'date' => '17 September 2026', 'tickets' => '170 tiket'],
-        ];
-
-        $topEvents = [
-            ['name' => 'Music Festival Campus Night', 'sales' => '480 tiket', 'income' => 'Rp 42 jt'],
-            ['name' => 'Digital Innovation Summit 2026', 'sales' => '320 tiket', 'income' => 'Rp 31 jt'],
-            ['name' => 'Startup Meetup by Amikom', 'sales' => '210 tiket', 'income' => 'Rp 19 jt'],
-        ];
-
-        $nearestEvent = ['name' => 'Digital Innovation Summit 2026', 'date' => '12 Agustus 2026', 'venue' => 'Auditorium Amikom'];
-
-        $transactions = [
-            ['buyer' => 'Rina Sari', 'event' => 'Digital Innovation Summit 2026', 'qty' => 2, 'amount' => 'Rp 520.000', 'status' => 'Paid'],
-            ['buyer' => 'Bimo Prakoso', 'event' => 'Startup Meetup by Amikom', 'qty' => 1, 'amount' => 'Rp 180.000', 'status' => 'Paid'],
-            ['buyer' => 'Nadya Maulida', 'event' => 'Workshop UI/UX for Beginners', 'qty' => 3, 'amount' => 'Rp 450.000', 'status' => 'Pending'],
-            ['buyer' => 'Arif Rahman', 'event' => 'Music Festival Campus Night', 'qty' => 4, 'amount' => 'Rp 920.000', 'status' => 'Paid'],
-            ['buyer' => 'Salsabila', 'event' => 'Youngpreneur Networking', 'qty' => 2, 'amount' => 'Rp 300.000', 'status' => 'Refund'],
-        ];
-
-        $reviews = [
-            ['name' => 'Rina Sari', 'rating' => 5, 'comment' => 'Pemateri sangat inspiratif dan event terorganisir dengan baik.'],
-            ['name' => 'Dewi Kharisma', 'rating' => 4, 'comment' => 'Pelayanan dan platform tiket nyaman dipakai, detail acara jelas.'],
-            ['name' => 'Arif Rahman', 'rating' => 5, 'comment' => 'Waktu mulai tepat dan suasana event sangat bagus.'],
-        ];
+        $partnerName = $partnerName ?? ($partner->name ?? 'Partner');
+        $organization = $organization ?? ($partner->name ?? 'Partner');
+        $joinedAt = $partner->created_at ? \Carbon\Carbon::parse($partner->created_at)->translatedFormat('d F Y') : '-';
+        $stats = $stats ?? [];
+        $latestEvents = $latestEvents ?? [];
+        $topEvents = $topEvents ?? [];
+        $nearestEvent = $nearestEvent ?? null;
+        $transactions = $transactions ?? [];
+        $activityItems = $activityItems ?? [];
+        $revenueByMonth = $revenueByMonth ?? collect();
+        $ticketByMonth = $ticketByMonth ?? collect();
     @endphp
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+    <div class="space-y-6">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div class="flex items-center gap-3">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-700 text-lg font-black text-white shadow-soft">AH</div>
+                
                 <div>
                     <h1 class="text-2xl font-black text-slate-900">Dashboard Event Partner</h1>
-                    <p class="text-sm text-slate-500">AmikomEventHub partner workspace</p>
                 </div>
             </div>
 
@@ -63,37 +33,26 @@
             </div>
         </div>
 
-        <section class="mb-6 overflow-hidden rounded-2xl border  bg-indigo-600 border-indigo-200 bg-linear-to-r from-violet-700 via-indigo-600 to-fuchsia-500 text-white shadow-soft">
-            <div class="grid gap-6 px-5 py-6 md:grid-cols-[1.15fr_0.85fr] md:px-8 md:py-8">
-                <div>
-                    <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-[0.2em] text-indigo-50 uppercase">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" /></svg>
-                        Welcome Partner
-                    </div>
-                    <h2 class="text-3xl font-black sm:text-4xl">Halo, {{ $partnerName }}</h2>
-                    <p class="mt-3 max-w-2xl text-sm text-indigo-100 sm:text-base">Selamat datang di dashboard partner. Pantau performa event, penjualan tiket, dan transaksi terbaru secara ringkas dalam satu tampilan yang modern dan mudah dibaca.</p>
+        <section class="mb-6 overflow-hidden rounded-2xl border  bg-indigo-600 border-white/20 bg-linear-to-r from-violet-700 via-indigo-600 to-fuchsia-500 text-white shadow-soft">
+            <div class="px-5 py-6 md:px-8 md:py-8">
+                <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-[0.2em] text-indigo-50 uppercase">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" /></svg>
+                    Welcome Partner
                 </div>
 
-                <div class="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold tracking-[0.2em] text-indigo-100 uppercase">Organisasi</p>
-                            <p class="mt-2 text-xl font-bold">{{ $organization }}</p>
-                        </div>
-                        <div class="rounded-xl bg-white/15 p-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0l-4-4m-6 4l4-4" /></svg>
-                        </div>
-                    </div>
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                        <div class="rounded-xl bg-white/10 p-3">
-                            <p class="text-xs text-indigo-100">Status</p>
-                            <p class="mt-1 font-bold">Akun Aktif</p>
-                        </div>
-                        <div class="rounded-xl bg-white/10 p-3">
-                            <p class="text-xs text-indigo-100">Performa</p>
-                            <p class="mt-1 font-bold">Trend Positif</p>
-                        </div>
-                    </div>
+                <h2 class="text-3xl font-black sm:text-4xl">Halo, {{ $partnerName }}</h2>
+                <p class="mt-3 max-w-3xl text-sm text-indigo-100 sm:text-base">Selamat datang kembali! Pantau performa event, penjualan tiket, dan transaksi dalam satu dashboard yang mudah dipahami.</p>
+
+                <div class="mt-5 flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-emerald-500/60 px-3 py-1.5 text-sm font-semibold text-emerald-50 ring-1 ring-emerald-200/40">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 3" /></svg>
+                        Status: Aktif
+                    </span>
+
+                    <span class="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-sm font-semibold text-white ring-1 ring-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        Bergabung: {{ $joinedAt }}
+                    </span>
                 </div>
             </div>
         </section>
@@ -132,7 +91,7 @@
                         <p class="text-xs font-bold tracking-[0.24em] text-slate-400 uppercase">Grafik</p>
                         <h3 class="text-lg font-black text-slate-900">Pendapatan Bulanan</h3>
                     </div>
-                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">Rp 184,5 jt</span>
+                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">{{ data_get($stats, '4.value', 'Rp 0') }}</span>
                 </div>
                 <div class="h-80">
                     <canvas id="revenueChart"></canvas>
@@ -145,7 +104,7 @@
                         <p class="text-xs font-bold tracking-[0.24em] text-slate-400 uppercase">Grafik</p>
                         <h3 class="text-lg font-black text-slate-900">Tiket Terjual Bulanan</h3>
                     </div>
-                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">1.420 tiket</span>
+                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">{{ data_get($stats, '3.value', '0 tiket') }}</span>
                 </div>
                 <div class="h-80">
                     <canvas id="ticketChart"></canvas>
@@ -206,11 +165,17 @@
                     </div>
                     <span class="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600">Upcoming</span>
                 </div>
-                <div class="rounded-2xl bg-linear-to-br from-sky-50 to-indigo-50 p-4">
-                    <p class="text-sm font-semibold text-sky-700">{{ $nearestEvent['date'] }}</p>
-                    <h4 class="mt-2 text-xl font-black text-slate-900">{{ $nearestEvent['name'] }}</h4>
-                    <p class="mt-1 text-sm text-slate-600">{{ $nearestEvent['venue'] }}</p>
-                </div>
+                @if ($nearestEvent)
+                    <div class="rounded-2xl bg-linear-to-br from-sky-50 to-indigo-50 p-4">
+                        <p class="text-sm font-semibold text-sky-700">{{ $nearestEvent['date'] }}</p>
+                        <h4 class="mt-2 text-xl font-black text-slate-900">{{ $nearestEvent['name'] }}</h4>
+                        <p class="mt-1 text-sm text-slate-600">{{ $nearestEvent['location'] ?? '-' }}</p>
+                    </div>
+                @else
+                    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                        Belum ada event aktif untuk ditampilkan.
+                    </div>
+                @endif
             </div>
 
             <div class="rounded-xl border border-indigo-100 bg-indigo-50/40 p-4 shadow-sm sm:p-5">
@@ -222,7 +187,7 @@
                     <span class="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">4.8 / 5</span>
                 </div>
                 <div class="space-y-3">
-                    @foreach ($reviews as $review)
+                    @foreach ($activityItems as $review)
                         <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
                             <div class="flex items-center justify-between gap-2">
                                 <p class="font-bold text-slate-900">{{ $review['name'] }}</p>
@@ -254,7 +219,7 @@
                         <tr class="border-b border-slate-200 text-slate-500">
                             <th class="py-3 pr-4 font-semibold">Nama Pembeli</th>
                             <th class="py-3 pr-4 font-semibold">Nama Event</th>
-                            <th class="py-3 pr-4 font-semibold">Jumlah Tiket</th>
+                            <th class="py-3 pr-4 font-semibold">Order ID</th>
                             <th class="py-3 pr-4 font-semibold">Total Pembayaran</th>
                             <th class="py-3 font-semibold">Status</th>
                         </tr>
@@ -264,7 +229,7 @@
                             <tr class="border-b border-slate-100 last:border-b-0">
                                 <td class="py-3 pr-4 font-semibold text-slate-900">{{ $transaction['buyer'] }}</td>
                                 <td class="py-3 pr-4">{{ $transaction['event'] }}</td>
-                                <td class="py-3 pr-4">{{ $transaction['qty'] }}</td>
+                                <td class="py-3 pr-4">{{ $transaction['order_id'] }}</td>
                                 <td class="py-3 pr-4 font-semibold text-slate-900">{{ $transaction['amount'] }}</td>
                                 <td class="py-3">
                                     @php
@@ -289,14 +254,19 @@
         const revenueCtx = document.getElementById('revenueChart');
         const ticketCtx = document.getElementById('ticketChart');
 
+        const revenueLabels = {!! json_encode($revenueByMonth->pluck('label')) !!};
+        const revenueData = {!! json_encode($revenueByMonth->pluck('value')) !!};
+        const ticketLabels = {!! json_encode($ticketByMonth->pluck('label')) !!};
+        const ticketData = {!! json_encode($ticketByMonth->pluck('value')) !!};
+
         if (revenueCtx) {
             new Chart(revenueCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    labels: revenueLabels,
                     datasets: [{
                         label: 'Pendapatan Bulanan',
-                        data: [12, 16, 14, 18, 20, 22, 24],
+                        data: revenueData,
                         borderColor: '#4f46e5',
                         backgroundColor: 'rgba(79, 70, 229, 0.12)',
                         borderWidth: 3,
@@ -326,10 +296,10 @@
             new Chart(ticketCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
+                    labels: ticketLabels,
                     datasets: [{
                         label: 'Tiket Terjual',
-                        data: [120, 160, 145, 210, 220, 250, 315],
+                        data: ticketData,
                         backgroundColor: ['#6366f1', '#818cf8', '#6366f1', '#818cf8', '#6366f1', '#818cf8', '#6366f1'],
                         borderRadius: 8
                     }]

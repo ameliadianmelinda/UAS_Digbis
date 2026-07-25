@@ -26,28 +26,86 @@
 
  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
  <script type="text/javascript">
+     let paymentCompleted = false;
+
+     const closePaymentPanel = () => {
+         if (window.snap && typeof window.snap.close === 'function') {
+             window.snap.close();
+         }
+     };
+
+     const handleClosed = () => {
+         if (paymentCompleted) {
+             return;
+         }
+
+         alert('Anda menutup panel pembayaran. Reservasi tiket akan tetap disimpan selama 2 menit, lalu tiket akan dirilis kembali jika pembayaran tidak diselesaikan.');
+         window.location.href = @json(route('events.show', $transaction->event->id));
+     };
+
      document.getElementById('pay-button').onclick = function () {
          // SnapToken acquired from previous step
          snap.pay('{{ $transaction->snap_token }}', {
-             // Optional
              onSuccess: function(result){
-                 window.location.href = "{{ route('checkout.success', $transaction->order_id) }}";
+                 paymentCompleted = true;
+                 handleSuccess();
              },
-             // Optional
              onPending: function(result){
-                 window.location.href = "{{ route('checkout.success', $transaction->order_id) }}";
+                 paymentCompleted = true;
+                 handleSuccess();
              },
-             // Optional
              onError: function(result){
-                 alert("Pembayaran Gagal!");
+                 paymentCompleted = true;
+                 alert('Pembayaran gagal. Silakan coba lagi.');
+                 window.location.href = @json(route('events.show', $transaction->event->id));
+             },
+             onClose: function(){
+                 handleClosed();
              }
          });
+     };
+
+     const handleExpired = () => {
+         clearInterval(intervalId);
+         closePaymentPanel();
+         document.getElementById('pay-button').disabled = true;
+         alert('Reservasi Anda telah kedaluwarsa. Tiket telah dirilis kembali. Silakan buat reservasi baru.');
+         window.location.href = @json(route('events.show', $transaction->event->id));
+     };
+
+     const handleSuccess = () => {
+         clearInterval(intervalId);
+         closePaymentPanel();
+         window.location.href = @json(route('checkout.success', $transaction->order_id));
      };
 
      // Auto trigger
      window.onload = function() {
          document.getElementById('pay-button').click();
      }
+
+    // Poll transaction status to detect expiry / external updates
+    (function pollTransactionStatus() {
+        const statusUrl = @json(route('checkout.status', $transaction->order_id));
+
+        const check = () => {
+            fetch(statusUrl, { headers: { 'Accept': 'application/json' } })
+                .then(res => res.json())
+                .then(data => {
+                    const status = (data.status || '').toLowerCase();
+                    const isExpired = Boolean(data.is_expired);
+
+                    if (isExpired || status === 'expired' || status === 'failed') {
+                        handleExpired();
+                    } else if (status === 'success' || status === 'settlement') {
+                        handleSuccess();
+                    }
+                }).catch(() => {});
+        };
+
+        const intervalId = setInterval(check, 5000);
+        check();
+    })();
  </script>
 
  <style>
