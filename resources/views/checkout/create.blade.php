@@ -64,14 +64,21 @@
                      <span>Harga Tiket</span>
                      <span>Rp {{ number_format($event->price, 0, ',', '.') }}</span>
                  </div>
-                 <div class="flex justify-between text-slate-500">
-                     <span>Biaya Layanan</span>
-                     <span>Rp 5.000</span>
-                 </div>
+                 @if($event->price > 0)
+                     <div class="flex justify-between text-slate-500">
+                         <span>Biaya Layanan</span>
+                         <span>Rp 5.000</span>
+                     </div>
+                 @endif
                  <div class="flex justify-between text-2xl font-black mt-4 pt-4 border-t">
                      <span>Total Bayar</span>
-                     <span class="text-indigo-600">Rp {{ number_format($event->price + 5000, 0, ',', '.') }}</span>
+                     <span class="text-indigo-600">
+                         Rp {{ number_format($event->price > 0 ? $event->price + 5000 : 0, 0, ',', '.') }}
+                     </span>
                  </div>
+                 @if($event->price === 0)
+                     <p class="text-sm text-emerald-600">Acara gratis: Pembayaran tidak diperlukan dan tiket langsung dikirim.</p>
+                 @endif
              </div>
          </div>
 

@@ -27,6 +27,17 @@
                 <p class="text-xs text-slate-500">Nama organisasi tidak dapat diubah.</p>
             </div>
 
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="rounded-2xl bg-indigo-50 p-4">
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Rating Rata-rata</p>
+                    <p class="mt-2 text-3xl font-black text-slate-900">{{ data_get($profile, 'rating', 0.0) }}</p>
+                </div>
+                <div class="rounded-2xl bg-slate-100 p-4">
+                    <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Jumlah Review</p>
+                    <p class="mt-2 text-3xl font-black text-slate-900">{{ data_get($profile, 'review_count', 0) }}</p>
+                </div>
+            </div>
+
             <div class="space-y-2">
                 <label for="email" class="text-sm font-semibold text-slate-700">Email</label>
                 <input type="email" value="{{ data_get($profile, 'org_email', '-') }}" readonly class="w-full rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-sm text-slate-500 shadow-sm outline-none">

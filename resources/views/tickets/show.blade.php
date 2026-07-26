@@ -46,6 +46,50 @@
             </div>
         </div>
 
+        <div class="mt-8 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-black text-slate-900">Beri Penilaian & Review</h2>
+            <p class="text-sm text-slate-500 mt-2">Berikan rating setelah acara selesai untuk membantu penyelenggara meningkatkan pengalaman.</p>
+
+            @php
+                $canReview = $transaction->isSuccess() && $transaction->event?->date?->isPast() && !$transaction->review;
+            @endphp
+
+            @if($canReview)
+                <form action="{{ route('tickets.review.store', $transaction) }}" method="POST" class="mt-6 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Rating</label>
+                        <select name="rating" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-700 shadow-sm outline-none">
+                            <option value="">Pilih rating</option>
+                            @for($i = 1; $i <= 5; $i++)
+                                <option value="{{ $i }}" {{ old('rating') == $i ? 'selected' : '' }}>{{ $i }} bintang</option>
+                            @endfor
+                        </select>
+                        @error('rating')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Komentar</label>
+                        <textarea name="comment" rows="4" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-700 shadow-sm outline-none" placeholder="Tulis pengalaman Anda mengikuti acara...">{{ old('comment') }}</textarea>
+                        @error('comment')<p class="mt-1 text-sm text-rose-600">{{ $message }}</p>@enderror
+                    </div>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white hover:bg-indigo-700 transition">
+                        Kirim Review
+                    </button>
+                </form>
+            @elseif($transaction->review)
+                <div class="mt-6 rounded-2xl bg-emerald-50 border border-emerald-100 p-5 text-slate-700">
+                    <p class="font-bold">Terima kasih! Review Anda sudah terkirim.</p>
+                    <p class="mt-2">Rating: {{ $transaction->review->rating }} ⭐</p>
+                    <p class="mt-2">{{ $transaction->review->comment }}</p>
+                </div>
+            @else
+                <div class="mt-6 rounded-2xl bg-slate-50 border border-slate-200 p-5 text-slate-600">
+                    <p class="font-bold">Review tersedia setelah acara selesai.</p>
+                    <p class="mt-2">Silakan kembali setelah tanggal acara untuk memberikan penilaian.</p>
+                </div>
+            @endif
+        </div>
+
         <div class="mt-8 flex flex-wrap gap-3">
             <a href="{{ route('tickets.history') }}" class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition">
                 Kembali ke Riwayat Tiket

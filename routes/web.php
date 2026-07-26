@@ -41,6 +41,7 @@ Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.
 Route::middleware('auth')->prefix('tickets')->name('tickets.')->group(function () {
     Route::get('history', [\App\Http\Controllers\TicketHistoryController::class, 'index'])->name('history');
     Route::get('history/{transaction}', [\App\Http\Controllers\TicketHistoryController::class, 'show'])->name('history.show');
+    Route::post('{transaction}/review', [\App\Http\Controllers\ReviewController::class, 'store'])->name('review.store');
 });
 Route::post('/logout', function (\Illuminate\Http\Request $request) {
     \Illuminate\Support\Facades\Auth::logout();

@@ -16,8 +16,11 @@ class EventController extends Controller
 
         $remainingTickets = $event->availableTicketsCount();
         $isSoldOut = $event->isSoldOut();
+        $averageRating = $event->averageRating();
+        $reviewCount = $event->reviewsCount();
+        $recentReviews = $event->reviews()->latest()->take(3)->get();
 
-        return view('event-detail', compact('categories', 'event', 'remainingTickets', 'isSoldOut'));
+        return view('event-detail', compact('categories', 'event', 'remainingTickets', 'isSoldOut', 'averageRating', 'reviewCount', 'recentReviews'));
     }
 
     public function availability(Event $event)

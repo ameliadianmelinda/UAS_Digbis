@@ -28,7 +28,7 @@ class CheckoutController extends Controller
                 'customer_name' => Auth::user()?->name ?? '',
                 'customer_email' => Auth::user()?->email ?? '',
                 'customer_phone' => '',
-                'total_price' => $freshEvent->price + 5000,
+                'total_price' => $freshEvent->price > 0 ? $freshEvent->price + 5000 : 0,
                 'status' => Transaction::STATUS_PENDING,
             ]);
         });
@@ -104,7 +104,7 @@ class CheckoutController extends Controller
             }
         }
 
-        $totalPrice = $event->price + 5000;
+        $totalPrice = $event->price > 0 ? $event->price + 5000 : 0;
         $orderId = $transaction->order_id;
 
         $transaction->update([
@@ -113,6 +113,19 @@ class CheckoutController extends Controller
             'customer_phone' => $customerPhone,
             'total_price' => $totalPrice,
         ]);
+
+        if ($event->price === 0) {
+            if ($transaction->status === Transaction::STATUS_PENDING) {
+                $transaction->update(['status' => Transaction::STATUS_SUCCESS]);
+                try {
+                    \Illuminate\Support\Facades\Mail::to($transaction->customer_email)->send(new \App\Mail\EventTicketMail($transaction));
+                } catch (\Exception $e) {
+                    Log::error('Gagal mengirim email E-Ticket untuk event gratis: ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->route('checkout.success', $transaction->order_id);
+        }
 
         try {
             \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -160,11 +173,16 @@ class CheckoutController extends Controller
 
         public function payment(string $orderId)
     {
-         // Mengambil daftar kategori untuk keperluan menu footer
-         $categories = \App\Models\Category::all();
+        // Mengambil daftar kategori untuk keperluan menu footer
+        $categories = \App\Models\Category::all();
 
-             $transaction = Transaction::with('event')->whereOrderId($orderId)->firstOrFail();
-            return view('checkout.payment', compact('transaction','categories'));
+        $transaction = Transaction::with('event')->whereOrderId($orderId)->firstOrFail();
+
+        if ($transaction->total_price === 0) {
+            return redirect()->route('checkout.success', $transaction->order_id);
+        }
+
+        return view('checkout.payment', compact('transaction','categories'));
     }
 
         public function status(string $orderId)
@@ -208,6 +226,13 @@ class CheckoutController extends Controller
         \Midtrans\Config::$is3ds = true;
 
         $paymentState = 'success';
+
+        if ($transaction->total_price === 0) {
+            if ($transaction->status === Transaction::STATUS_PENDING) {
+                $transaction->update(['status' => Transaction::STATUS_SUCCESS]);
+            }
+            return view('checkout.success', compact('transaction', 'categories', 'paymentState'));
+        }
 
         try {
             // Mengecek status pesanan secara mandiri (Bypass)

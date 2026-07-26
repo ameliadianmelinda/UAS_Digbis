@@ -15,6 +15,17 @@ class ProfileController extends Controller
         $user = Auth::user();
         $partner = $user?->partner()->first();
 
+        $eventIds = $partner ? $partner->events()->pluck('id')->all() : [];
+        $reviewStats = [
+            'average' => 0.0,
+            'count' => 0,
+        ];
+
+        if (!empty($eventIds)) {
+            $reviewStats['average'] = round((float) \App\Models\Review::whereIn('event_id', $eventIds)->avg('rating'), 1);
+            $reviewStats['count'] = \App\Models\Review::whereIn('event_id', $eventIds)->count();
+        }
+
         $profile = [
             'logo' => $partner?->logo_url,
             'org_name' => $partner?->name ?? $user?->name ?? '-',
@@ -23,6 +34,8 @@ class ProfileController extends Controller
             'phone' => $partner?->phone ?? '-',
             'address' => $partner?->address ?? '-',
             'status' => $partner?->status ?? 'Aktif',
+            'rating' => $reviewStats['average'],
+            'review_count' => $reviewStats['count'],
         ];
 
         return view('partner.profile', compact('profile'));

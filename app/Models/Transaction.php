@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\Review;
 
 class Transaction extends Model
 {
@@ -23,9 +24,19 @@ class Transaction extends Model
         return $this->belongsTo(Event::class);
     }
 
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
+
     public function isPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
+    }
+
+    public function isReviewable(): bool
+    {
+        return $this->status === self::STATUS_SUCCESS && $this->event?->date?->isPast() && !$this->review;
     }
 
     public function isSuccess(): bool
