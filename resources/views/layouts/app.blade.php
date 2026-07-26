@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
     <title>AmikomEventHub - Temukan Event Seru!</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/logo-apk2.png') }}" sizes="32x32">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/logo-apk2.png') }}" sizes="32x32">
+    <link rel="apple-touch-icon" href="{{ asset('assets/logo-apk2.png') }}" sizes="180x180">
+    <link rel="icon" type="image/png" href="{{ asset('assets/logo-apk2.png') }}" sizes="192x192">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">

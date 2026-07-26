@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
     <title>@yield('title', 'Super Admin - AmikomEventHub')</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/logo-apk2.png') }}" sizes="32x32">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/logo-apk2.png') }}" sizes="32x32">
+    <link rel="apple-touch-icon" href="{{ asset('assets/logo-apk2.png') }}" sizes="180x180">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
@@ -11,7 +15,7 @@
 <body class="bg-slate-50 text-slate-900 flex min-h-screen">
     <aside class="w-72 bg-indigo-900 text-indigo-100 flex flex-col p-6 space-y-8 sticky top-0 h-screen">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('assets/logo-apk.png') }}" alt="Super Admin Hub" class="w-12 h-12 rounded-2xl object-cover bg-white p-2">
+            <img src="{{ asset('assets/logo-apk.png') }}" alt="Super Admin Hub" class="w-12 h-12 rounded-2xl object-cover">
             <div>
                 <p class="font-black text-lg text-white">Super Admin Hub</p>
                 <p class="text-sm text-indigo-300">Control Center</p>
