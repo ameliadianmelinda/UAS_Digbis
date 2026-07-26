@@ -108,43 +108,7 @@
                 <div class="absolute -left-10 -top-10 w-32 h-32 bg-indigo-400 opacity-20 rounded-full"></div>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-                <div class="rounded-[2.5rem] bg-white p-8 shadow-2xl border border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <div class="rounded-3xl bg-indigo-50 px-4 py-3 text-indigo-600 font-black text-2xl">
-                            {{ $averageRating > 0 ? $averageRating : '0.0' }}
-                        </div>
-                        <div>
-                            <p class="text-sm uppercase tracking-[0.3em] text-slate-400 font-bold">Rating rata-rata</p>
-                            <p class="text-xl font-black text-slate-900">{{ $reviewCount }} ulasan</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex flex-wrap gap-2 text-amber-400">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <svg class="h-5 w-5" fill="{{ $i <= round($averageRating) ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.176 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.029 10.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"/>
-                            </svg>
-                        @endfor
-                    </div>
-                    <div class="mt-6 border-t border-slate-200 pt-5">
-                        <h4 class="text-lg font-bold text-slate-900">Review Terbaru</h4>
-                        @forelse($recentReviews as $review)
-                            <div class="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                                <div class="flex items-center justify-between gap-3">
-                                    <p class="font-bold text-slate-900">{{ $review->participant_name }}</p>
-                                    <span class="text-amber-500 font-bold">{{ $review->rating }} ★</span>
-                                </div>
-                                <p class="mt-3 text-sm text-slate-600">{{ $review->comment }}</p>
-                                <p class="mt-3 text-xs uppercase tracking-[0.2em] text-slate-400">{{ $review->created_at->translatedFormat('d M Y') }}</p>
-                            </div>
-                        @empty
-                            <div class="mt-4 rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4 text-slate-500">
-                                Belum ada review untuk event ini.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-
+            <div class="grid gap-6">
                 <div class="rounded-[2.5rem] border border-slate-100 bg-white p-8 shadow-2xl">
                     <h3 class="text-xl font-bold mb-4">Kebijakan Tiket</h3>
                     <ul class="space-y-3 text-slate-500">
@@ -170,6 +134,36 @@
                     </li>
                 </ul>
             </div>
+
+                <div class="rounded-[2.5rem] bg-white p-8 shadow-2xl border border-slate-100">
+                    <h3 class="text-xl font-bold mb-4">Ulasan & Penilaian</h3>
+                    <div class="flex items-center gap-2 text-xl font-black text-slate-900">
+                        <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                        <span>{{ $averageRating > 0 ? number_format($averageRating, 1) : '0.0' }}</span>
+                    </div>
+                    @if($reviewCount > 0)
+                        <p class="mt-2 text-base text-slate-600">{{ $reviewCount }} ulasan</p>
+                    @endif
+                    <div class="mt-6 border-t border-slate-200 pt-5">
+                        <h4 class="text-lg font-bold text-slate-900">Review Terbaru</h4>
+                        @forelse($recentReviews as $review)
+                            <div class="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="font-bold text-slate-900">{{ $review->participant_name }}</p>
+                                    <span class="text-amber-500 font-bold">{{ $review->rating }} ★</span>
+                                </div>
+                                <p class="mt-3 text-sm text-slate-600">{{ $review->comment }}</p>
+                                <p class="mt-3 text-xs uppercase tracking-[0.2em] text-slate-400">{{ $review->created_at->translatedFormat('d M Y') }}</p>
+                            </div>
+                        @empty
+                            <div class="mt-4 rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-4 text-slate-500">
+                                Belum ada review untuk event ini.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
         </div>
     </main>
 @endsection

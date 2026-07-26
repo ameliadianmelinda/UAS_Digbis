@@ -20,7 +20,7 @@
         </a>
     </div>
 
-    <form action="{{ route('partner.events.update', ['event' => $event->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form action="{{ route('partner.events.update', ['event' => $event->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="editEventForm" novalidate>
         @csrf
         @method('PATCH')
 
@@ -153,12 +153,13 @@
                             <input id="poster" name="poster" type="file" accept="image/*" class="hidden">
                         </label>
 
-                        <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-3">
+                        <div id="posterPreviewContainer" class="mt-4 rounded-2xl border border-slate-200 bg-white p-3">
                             @if ($event->poster_path)
-                                <img src="{{ asset($event->poster_path) }}" alt="Poster event saat ini" class="h-56 w-full rounded-xl object-cover">
-                                <p class="mt-3 text-sm text-slate-600">Poster saat ini</p>
+                                <img id="posterPreviewImage" src="{{ asset($event->poster_path) }}" alt="Poster event saat ini" class="h-56 w-full rounded-xl object-cover">
+                                <p id="posterPreviewText" class="mt-3 text-sm text-slate-600">Poster saat ini</p>
                             @else
-                                <div class="h-56 w-full rounded-xl bg-slate-100"></div>
+                                <div id="posterPreviewPlaceholder" class="h-56 w-full rounded-xl bg-slate-100"></div>
+                                <p id="posterPreviewText" class="mt-3 text-sm text-slate-600">Belum ada poster</p>
                             @endif
                         </div>
                     </div>
@@ -176,4 +177,39 @@
         </div>
     </form>
 </div>
+
+<script>
+    const posterInput = document.getElementById('poster');
+    const posterPreviewImage = document.getElementById('posterPreviewImage');
+    const posterPreviewText = document.getElementById('posterPreviewText');
+    const posterPreviewPlaceholder = document.getElementById('posterPreviewPlaceholder');
+
+    const showPosterPreview = (file) => {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            if (posterPreviewImage) {
+                posterPreviewImage.src = event.target.result;
+            }
+
+            if (posterPreviewPlaceholder) {
+                posterPreviewPlaceholder.classList.add('hidden');
+            }
+
+            if (posterPreviewText) {
+                posterPreviewText.textContent = 'Poster baru';
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    if (posterInput) {
+        posterInput.addEventListener('change', (event) => {
+            const [file] = event.target.files || [];
+            showPosterPreview(file);
+        });
+    }
+</script>
 @endsection

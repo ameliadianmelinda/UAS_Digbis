@@ -9,9 +9,9 @@
     <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
 </head>
 <body class="bg-indigo-900 text-white  min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-md w-full bg-white rounded-2xl text-slate-900 rounded-4xl p-8 shadow-2xl">
+    <div class="max-w-md w-full bg-white text-slate-900 p-8 shadow-2xl rounded-[2.5rem]">
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">AH</div>
+            <img src="{{ asset('assets/logo-apk.png') }}" alt="AmikomEventHub" class="w-16 h-16 rounded-2xl object-cover mx-auto mb-4">
             <h1 class="text-2xl font-black">Masuk sebagai Admin</h1>
             <p class="text-slate-500">AmikomEventHub Dashboard untuk penyelenggara event</p>
         </div>

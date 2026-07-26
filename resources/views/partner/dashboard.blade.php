@@ -20,7 +20,7 @@
     <div class="space-y-6">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div class="flex items-center gap-3">
-                
+
                 <div>
                     <h1 class="text-2xl font-black text-slate-900">Dashboard Event Partner</h1>
                 </div>
@@ -184,22 +184,28 @@
                         <p class="text-xs font-bold tracking-[0.24em] text-slate-400 uppercase">Feedback</p>
                         <h3 class="text-lg font-black text-slate-900">Rating & Review Terbaru</h3>
                     </div>
-                    <span class="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">4.8 / 5</span>
+                    <span class="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">{{ $reviewCount ?: 0 }} / {{ $averageRating ?: 0 }}</span>
                 </div>
                 <div class="space-y-3">
-                    @foreach ($activityItems as $review)
-                        <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
-                            <div class="flex items-center justify-between gap-2">
-                                <p class="font-bold text-slate-900">{{ $review['name'] }}</p>
-                                <div class="flex items-center gap-1 text-amber-400">
-                                    @for ($i = 0; $i < $review['rating']; $i++)
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.176 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.029 10.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"/></svg>
-                                    @endfor
-                                </div>
-                            </div>
-                            <p class="mt-2 text-sm text-slate-600">{{ $review['comment'] }}</p>
+                    @if ($activityItems->isEmpty())
+                        <div class="rounded-xl border border-slate-100 bg-slate-50 p-6 text-center">
+                            <p class="text-sm font-semibold text-slate-500">Belum ada ulasan.</p>
                         </div>
-                    @endforeach
+                    @else
+                        @foreach ($activityItems as $review)
+                            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <p class="font-bold text-slate-900">{{ $review['name'] }}</p>
+                                    <div class="flex items-center gap-1 text-amber-400">
+                                        @for ($i = 0; $i < $review['rating']; $i++)
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.176 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.029 10.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"/></svg>
+                                        @endfor
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-sm text-slate-600">{{ $review['comment'] }}</p>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </section>

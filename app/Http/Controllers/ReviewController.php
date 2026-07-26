@@ -16,8 +16,7 @@ class ReviewController extends Controller
 
         abort_unless($user !== null, 403);
         abort_unless($transaction->customer_email === $user->email, 403);
-        abort_unless($transaction->status === Transaction::STATUS_SUCCESS, 403);
-        abort_unless($transaction->event?->date?->isPast(), 403);
+        abort_unless($transaction->isReviewable(), 403);
         abort_unless(!$transaction->review, 409);
 
         $data = $request->validate([

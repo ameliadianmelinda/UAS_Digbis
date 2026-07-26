@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Partner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Review;
 use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\Request;
@@ -78,7 +79,7 @@ class DashboardController extends Controller
             ->sortBy('date')
             ->first();
 
-        $recentTransactions = Transaction::with('event')
+        $recentTransactions = Transaction::with(['event', 'review'])
             ->whereIn('event_id', $partnerEventIds)
             ->latest('created_at')
             ->take(5)
@@ -94,11 +95,24 @@ class DashboardController extends Controller
             ];
         })->values();
 
-        $activityItems = $recentTransactions->take(3)->map(function ($transaction) {
+        $partnerReviewsQuery = Review::with('event')
+            ->whereHas('event', function ($query) use ($partnerEventIds) {
+                $query->whereIn('id', $partnerEventIds);
+            });
+
+        $reviewCount = $partnerReviewsQuery->count();
+        $averageRating = $reviewCount ? round($partnerReviewsQuery->avg('rating'), 1) : 0;
+
+        $recentReviews = (clone $partnerReviewsQuery)
+            ->latest('created_at')
+            ->take(5)
+            ->get();
+
+        $activityItems = $recentReviews->map(function ($review) {
             return [
-                'name' => $transaction->customer_name,
-                'rating' => 5,
-                'comment' => 'Transaksi #' . $transaction->order_id . ' sedang berstatus ' . ucfirst($transaction->status),
+                'name' => $review->participant_name,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
             ];
         })->values();
 
@@ -145,6 +159,8 @@ class DashboardController extends Controller
             'nearestEvent',
             'transactions',
             'activityItems',
+            'reviewCount',
+            'averageRating',
             'revenueByMonth',
             'ticketByMonth'
         ));

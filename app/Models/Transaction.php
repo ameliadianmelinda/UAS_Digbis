@@ -13,6 +13,7 @@ class Transaction extends Model
     public const STATUS_FAILED = 'failed';
     public const STATUS_EXPIRED = 'expired';
     public const STATUS_CHALLENGE = 'challenge';
+    public const STATUS_SETTLEMENT = 'settlement';
     public const PENDING_EXPIRY_MINUTES = 2;
 
     protected $fillable = [
@@ -36,12 +37,14 @@ class Transaction extends Model
 
     public function isReviewable(): bool
     {
-        return $this->status === self::STATUS_SUCCESS && $this->event?->date?->isPast() && !$this->review;
+        $isCompleted = in_array($this->status, [self::STATUS_SUCCESS, self::STATUS_SETTLEMENT], true);
+
+        return $isCompleted && $this->event?->date?->isPast() && !$this->review;
     }
 
     public function isSuccess(): bool
     {
-        return $this->status === self::STATUS_SUCCESS;
+        return in_array($this->status, [self::STATUS_SUCCESS, self::STATUS_SETTLEMENT], true);
     }
 
     public function isFailed(): bool

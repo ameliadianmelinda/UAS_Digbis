@@ -54,21 +54,25 @@
     </section>
 
     <!-- Events Grid -->
-    <section id="events" class="max-w-7xl mx-auto px-6 py-20 scroll-mt-28">
-
-
-        <!-- Judul & Filter Kategori Sejajar -->
-        <div id="kategori" class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 scroll-mt-28">
-            <div class="text-center md:text-left">
+    <section id="events" class="w-full py-20 scroll-mt-28 bg-slate-100 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 rounded-3xl">
+            <!-- Judul & Filter Kategori Centered -->
+            @php
+                $selectedCategory = request()->query('category');
+            @endphp
+            <div id="kategori" class="flex flex-col items-center text-center gap-4 mb-8">
+            <div>
                 <h2 class="text-3xl font-extrabold mb-2">Event Terdekat</h2>
                 <p class="text-slate-500 font-medium">Jangan sampai ketinggalan acara seru minggu ini!</p>
             </div>
             <!-- Blok Navigasi Filter Kategori -->
-            <div class="flex gap-4">
-                <a href="{{ route('home') }}#kategori" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-black transition">Semua Kategori</a>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{{ route('home') }}#kategori" class="px-4 py-2 rounded-lg shadow-sm transition {{ $selectedCategory ? 'bg-gray-200 hover:bg-gray-300 text-black' : 'bg-indigo-600 text-white hover:bg-indigo-700' }}">
+                    Semua Kategori
+                </a>
                 @foreach($categories as $cat)
                     <a href="{{ route('home') }}?category={{ $cat->id }}#kategori"
-                       class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded shadow-sm transition">
+                       class="px-4 py-2 rounded-lg shadow-sm transition {{ $selectedCategory == $cat->id ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700' }}">
                         {{ $cat->name }}
                     </a>
                 @endforeach
@@ -120,7 +124,13 @@
                             </div>
                         </div>
                         <div class="mt-auto flex items-center justify-between gap-4 pt-4 border-t">
-                            <span class="text-2xl font-black text-indigo-600">Rp {{ number_format($event->price, 0, ',', '.') }}</span>
+                            <span class="text-2xl font-black text-indigo-600">
+                                @if($event->price <= 0)
+                                    Gratis
+                                @else
+                                    Rp {{ number_format($event->price, 0, ',', '.') }}
+                                @endif
+                            </span>
                             <a href="{{ route('events.show', $event->id) }}" class="inline-flex h-11 items-center justify-center px-5 rounded-xl bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-600 hover:text-white transition">
                                 Lihat Detail
                             </a>
@@ -131,20 +141,37 @@
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-6 pb-20">
-        <div class="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm">
-            <div class="grid md:grid-cols-3 gap-6">
-                <div>
-                    <p class="text-sm font-black tracking-[0.2em] text-indigo-500 uppercase">Tentang Kami</p>
-                    <h3 class="text-3xl font-black mt-2">Platform tiket untuk event kampus dan komunitas.</h3>
-                </div>
-                <div class="md:col-span-2 text-slate-600 leading-relaxed space-y-4">
-                    <p>AmikomEventHub membantu pembeli menemukan event, pesan tiket dengan cepat, dan menerima tiket secara aman. Pembayaran didukung Midtrans sehingga proses transaksi lebih praktis.</p>
-                    <p>Untuk penyelenggara event, tersedia jalur login partner dan dashboard pengelolaan event yang terpisah dari akun pembeli.</p>
-                </div>
+    <!-- Partner & Sponsor Section -->
+    <section class="pt-14 pb-24 bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 mb-14">
+            <div class="text-center space-y-3">
+                <h2 class="text-3xl md:text-xl font-extrabold">Partner & Sponsor</h2>
+                <p class="text-slate-500">Didukung oleh perusahaan dan komunitas terpercaya</p>
+            </div>
+        </div>
+
+        <!-- Partner Grid Container -->
+        <div class="max-w-7xl mx-auto px-6">
+            @php
+                $sponsors = [
+                    ['logo' => 'logo_amikom.png', 'name' => 'Universitas Amikom Yogyakarta'],
+                    ['logo' => 'logo-si.png', 'name' => 'Prodi S1 Sistem Informasi Amikom'],
+                    ['logo' => 'logo_ilabsains.png', 'name' => 'iLabSains'],
+                    ['logo' => 'logo_arthanta.png', 'name' => 'Arthanta'],
+                    ['logo' => 'logo_lentera.png', 'name' => 'Lentera'],
+                ];
+            @endphp
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                @foreach($sponsors as $sponsor)
+                    <div class="bg-white rounded-2xl p-4 shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col items-center">
+                        <div class="h-20 flex items-center justify-center mb-2">
+                            <img src="{{ asset('assets/' . $sponsor['logo']) }}" alt="{{ $sponsor['name'] }}" class="max-h-20 max-w-full object-contain">
+                        </div>
+                        <p class="text-center font-semibold text-slate-700 text-xs line-clamp-2">{{ $sponsor['name'] }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
-
-
 @endsection

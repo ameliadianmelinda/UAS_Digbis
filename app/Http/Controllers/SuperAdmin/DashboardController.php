@@ -41,7 +41,7 @@ class DashboardController extends Controller
             ->merge(Partner::whereHas('user', fn ($query) => $query->where('role', User::ROLE_TENANT))->latest()->take(3)->get()->map(fn (Partner $partner) => ['label' => 'Tenant baru mendaftar', 'subject' => $partner->name, 'date' => $partner->created_at]))
             ->merge(Event::latest()->take(3)->get()->map(fn (Event $event) => ['label' => 'Event baru dibuat', 'subject' => $event->title, 'date' => $event->created_at]))
             ->merge(Transaction::whereIn('status', $paidStatuses)->latest()->take(3)->get()->map(fn (Transaction $transaction) => ['label' => 'Tiket berhasil dibeli', 'subject' => $transaction->order_id, 'date' => $transaction->created_at]))
-            ->sortByDesc('date')->take(8)->values();
+            ->sortByDesc('date')->take(5)->values();
 
         return view('superadmin.dashboard', [
             'totalTenants' => Partner::whereHas('user', fn ($query) => $query->where('role', User::ROLE_TENANT))->count(),

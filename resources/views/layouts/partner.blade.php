@@ -13,7 +13,7 @@
 <body class="bg-slate-50 text-slate-800 flex min-h-screen">
     <aside class="w-72 bg-indigo-900 text-indigo-100 flex flex-col p-6 space-y-8 sticky top-0 h-screen">
         <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-white text-indigo-900 font-black text-lg flex items-center justify-center">PH</div>
+            <img src="{{ asset('assets/logo-apk.png') }}" alt="Partner Hub" class="w-12 h-12 rounded-2xl object-cover bg-white p-2">
             <div>
                 <p class="font-black text-lg text-white">Partner Hub</p>
                 <p class="text-sm text-indigo-300">Panel Organizer</p>

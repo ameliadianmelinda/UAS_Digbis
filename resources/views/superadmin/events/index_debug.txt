@@ -25,20 +25,10 @@
             </thead>
             <tbody class="divide-y">
                 @forelse($events as $event)
-                    @php
-                        $posterUrl = 'https://placehold.co/72x72?text=No+Banner&bg=F8FAFC&fg=94A3B8';
-                        if ($event->poster_path) {
-                            if (file_exists(public_path($event->poster_path))) {
-                                $posterUrl = asset($event->poster_path);
-                            } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($event->poster_path)) {
-                                $posterUrl = asset('storage/' . ltrim($event->poster_path, '/'));
-                            }
-                        }
-                    @endphp
                     <tr class="hover:bg-slate-50">
                         <td class="px-6 py-4 align-middle whitespace-nowrap">
                             <div class="w-[72px] h-[72px] rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                <img src="{{ $posterUrl }}" class="w-full h-full object-cover object-center" alt="Banner {{ $event->title }}">
+                                <img src="{{ $event->poster_path ? asset('storage/' . $event->poster_path) : 'https://placehold.co/72x72?text=No+Banner&bg=F8FAFC&fg=94A3B8' }}" class="w-full h-full object-cover object-center">
                             </div>
                         </td>
                         <td class="px-6 py-4 font-bold whitespace-nowrap overflow-hidden text-ellipsis max-w-[260px]">{{ $event->title }}</td>
@@ -49,7 +39,20 @@
                             <span class="px-3 py-1 rounded-lg text-xs font-bold uppercase {{ ($event->status ?? 'active') === 'inactive' ? 'bg-slate-100 text-slate-600' : 'bg-green-100 text-green-700' }}">{{ $event->status ?? 'active' }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('superadmin.events.show', $event) }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700">Detail</a>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <a href="{{ route('superadmin.events.show', $event) }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700">Detail</a>
+                                @if(($event->status ?? 'active') !== 'inactive')
+                                    <form method="POST" action="{{ route('superadmin.events.disable', $event) }}" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-amber-600">Nonaktifkan</button>
+                                    </form>
+                                @endif
+                                <form method="POST" action="{{ route('superadmin.events.destroy', $event) }}" onsubmit="return confirm('Hapus event ini?')" class="inline-block">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700">Hapus</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
@@ -62,4 +65,4 @@
     </div>
     <div class="p-6">{{ $events->links() }}</div>
 </div>
-@endsection
+@endsectionradmin.events.destroy', $event) }}" onsubmit="return confirm('Hapus event ini?')">@csrf @method('DELETE')<button class="text-rose-600 font-bold">Hapus</button></form></div></td></tr>@empty<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada event.</td></tr>@endforelse</tbody></table></div><div class="p-6">{{ $events->links() }}</div></div>@endsection

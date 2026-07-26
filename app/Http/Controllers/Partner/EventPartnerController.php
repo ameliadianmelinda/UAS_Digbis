@@ -132,16 +132,36 @@ class EventPartnerController extends Controller
             ])->withInput();
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|exists:categories,name',
-            'event_datetime' => 'required|date_format:Y-m-d\TH:i',
-            'location' => 'required|string|max:255',
-            'ticket_price' => 'required|numeric|min:0',
-            'ticket_quantity' => 'required|integer|min:1',
-            'description' => 'required|string',
-            'poster' => 'required|image|mimes:png,jpg,jpeg,webp|max:5120',
-        ]);
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'category' => 'required|string|exists:categories,name',
+                'event_datetime' => 'required|date_format:Y-m-d\TH:i',
+                'location' => 'required|string|max:255',
+                'ticket_price' => 'required|numeric|min:0',
+                'ticket_quantity' => 'required|integer|min:1',
+                'description' => 'required|string',
+                'poster' => 'required|image|mimes:png,jpg,jpeg,webp|max:5120',
+            ],
+            [
+                'poster.required' => 'Poster event harus diunggah.',
+                'poster.image' => 'File harus berupa gambar.',
+                'poster.mimes' => 'Format gambar harus PNG, JPG, JPEG, atau WebP.',
+                'poster.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
+                'name.required' => 'Nama event harus diisi.',
+                'category.required' => 'Kategori harus dipilih.',
+                'category.exists' => 'Kategori yang dipilih tidak valid.',
+                'event_datetime.required' => 'Tanggal dan waktu event harus diisi.',
+                'event_datetime.date_format' => 'Format tanggal dan waktu tidak valid.',
+                'location.required' => 'Lokasi event harus diisi.',
+                'ticket_price.required' => 'Harga tiket harus diisi.',
+                'ticket_price.numeric' => 'Harga tiket harus berupa angka.',
+                'ticket_quantity.required' => 'Jumlah tiket harus diisi.',
+                'ticket_quantity.integer' => 'Jumlah tiket harus berupa angka bulat.',
+                'ticket_quantity.min' => 'Jumlah tiket minimal 1.',
+                'description.required' => 'Deskripsi event harus diisi.',
+            ]
+        );
 
         $posterPath = null;
         if ($request->hasFile('poster')) {
