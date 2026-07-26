@@ -27,6 +27,7 @@
  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
  <script type="text/javascript">
      let paymentCompleted = false;
+     let intervalId = null;
 
      const closePaymentPanel = () => {
          if (window.snap && typeof window.snap.close === 'function') {
@@ -47,11 +48,9 @@
          // SnapToken acquired from previous step
          snap.pay('{{ $transaction->snap_token }}', {
              onSuccess: function(result){
-                 paymentCompleted = true;
                  handleSuccess();
              },
              onPending: function(result){
-                 paymentCompleted = true;
                  handleSuccess();
              },
              onError: function(result){
@@ -74,7 +73,14 @@
      };
 
      const handleSuccess = () => {
-         clearInterval(intervalId);
+         if (paymentCompleted) {
+             return;
+         }
+
+         paymentCompleted = true;
+         if (intervalId) {
+             clearInterval(intervalId);
+         }
          closePaymentPanel();
          window.location.href = @json(route('checkout.success', $transaction->order_id));
      };
@@ -103,7 +109,7 @@
                 }).catch(() => {});
         };
 
-        const intervalId = setInterval(check, 5000);
+        intervalId = setInterval(check, 5000);
         check();
     })();
  </script>

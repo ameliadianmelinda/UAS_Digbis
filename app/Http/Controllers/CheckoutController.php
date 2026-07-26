@@ -128,8 +128,8 @@ class CheckoutController extends Controller
         }
 
         try {
-            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-            \Midtrans\Config::$isProduction = false;
+            \Midtrans\Config::$serverKey = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = config('midtrans.is_production');
             \Midtrans\Config::$isSanitized = true;
             \Midtrans\Config::$is3ds = true;
 
@@ -220,8 +220,8 @@ class CheckoutController extends Controller
         $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
 
         // Konfigurasi Midtrans untuk mengecek status transaksi langsung ke API
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
         \Midtrans\Config::$isSanitized = true;
         \Midtrans\Config::$is3ds = true;
 
