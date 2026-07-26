@@ -14,10 +14,14 @@
             @if(isset($paymentState) && $paymentState === 'pending')
                 masih dalam proses. Silakan tunggu beberapa saat hingga pembayaran berhasil.
             @else
-                sedang diproses atau telah berhasil.
+                telah berhasil.
             @endif
-            E-Ticket akan dikirim ke email Anda (<strong>{{ $transaction->customer_email }}</strong>) setelah pembayaran terkonfirmasi lunas.
         </p>
+        @if(isset($paymentState) && $paymentState === 'pending')
+            <p class="text-yellow-600 font-semibold mb-6">Status pembayaran masih menunggu konfirmasi dari sistem pembayaran.</p>
+        @else
+            <p class="text-green-600 font-semibold mb-6">Pembayaran Anda berhasil. E-Ticket akan dikirim ke email Anda (<strong>{{ $transaction->customer_email }}</strong>).</p>
+        @endif
         <div class="flex flex-col gap-4 items-center">
             @if(isset($paymentState) && $paymentState === 'pending')
                 <a href="{{ route('events.show', $transaction->event) }}" class="inline-block px-8 py-4 bg-slate-500 text-white rounded-xl font-bold hover:bg-slate-600 transition">
