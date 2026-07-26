@@ -82,6 +82,7 @@
              </div>
          </div>
 
+         @auth
          <!-- Form Card -->
          <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
              <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8">📦 Data Pemesan</h3>
@@ -92,16 +93,16 @@
                      <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama
                          Lengkap</label>
                      <input type="text" name="customer_name" placeholder="Masukkan nama sesuai identitas"
-                         class="w-full px-5 py-4 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium {{ auth()->check() ? 'bg-slate-50' : 'bg-white' }}"
-                         required value="{{ old('customer_name', auth()->user()->name ?? '') }}" @auth readonly @endauth>
+                         class="w-full px-5 py-4 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium bg-slate-50"
+                         required value="{{ old('customer_name', auth()->user()->name ?? '') }}" readonly>
                  </div>
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
                          <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Email
                              Aktif</label>
                          <input type="email" name="customer_email" placeholder="contoh@gmail.com"
-                             class="w-full px-5 py-4 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium {{ auth()->check() ? 'bg-slate-50' : 'bg-white' }}"
-                             required value="{{ old('customer_email', auth()->user()->email ?? '') }}" @auth readonly @endauth>
+                             class="w-full px-5 py-4 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium bg-slate-50"
+                             required value="{{ old('customer_email', auth()->user()->email ?? '') }}" readonly>
                          <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">*E-Ticket
                              akan dikirim ke email ini</p>
                      </div>
@@ -122,6 +123,7 @@
                      & Ketentuan kami.</p>
              </form>
          </div>
+         @endauth
 
      </div>
 </main>

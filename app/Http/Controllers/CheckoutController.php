@@ -75,6 +75,10 @@ class CheckoutController extends Controller
             return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan oleh Super Admin. Silakan hubungi administrator.');
         }
 
+        if (!Auth::check()) {
+            return redirect()->route('auth.google.checkout', $event)->with('error', 'Silakan login dengan Google terlebih dahulu untuk melanjutkan checkout.');
+        }
+
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
