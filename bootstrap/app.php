@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\AccountStatusMiddleware;
+use App\Http\Middleware\PartnerMiddleware;
+use App\Http\Middleware\SuperAdminMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -10,9 +14,21 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [AccountStatusMiddleware::class]);
+
+        $middleware->alias([
+            'admin' => AdminMiddleware::class,
+            'partner' => PartnerMiddleware::class,
+            'superadmin' => SuperAdminMiddleware::class,
+        ]);
+
+        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+
+        $middleware->validateCsrfTokens(except: ['/midtrans/callback', // Mengecualikan route webhook Midtrans dari blokir CSRF
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
