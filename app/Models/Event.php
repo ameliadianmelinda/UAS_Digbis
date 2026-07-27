@@ -76,6 +76,21 @@ class Event extends Model
         return $this->availableTicketsCount() <= 0;
     }
 
+    public function getPosterUrlAttribute(): string
+    {
+        if ($this->poster_path) {
+            if (file_exists(public_path($this->poster_path))) {
+                return asset($this->poster_path);
+            }
+
+            if (Storage::disk('public')->exists($this->poster_path)) {
+                return asset('storage/' . ltrim($this->poster_path, '/'));
+            }
+        }
+
+        return 'https://placehold.co/200x200?text=No+Image';
+    }
+
     protected static function booted()
     {
         static::deleting(function ($event) {

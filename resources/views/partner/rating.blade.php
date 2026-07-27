@@ -14,7 +14,7 @@
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 bg-white p-4 sm:p-5">
             <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-                <form method="GET" action="#" class="flex flex-1 flex-col gap-3 md:flex-row md:flex-wrap">
+                <form method="GET" action="{{ route('partner.ratings.index') }}" class="flex flex-1 flex-col gap-3 md:flex-row md:flex-wrap">
                     <label class="flex-1 min-w-64 md:min-w-72">
                         <span class="sr-only">Search peserta atau event</span>
                         <div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 shadow-sm">
@@ -24,28 +24,29 @@
                             <input
                                 type="text"
                                 name="search"
+                                value="{{ old('search', $search ?? '') }}"
                                 placeholder="Cari nama peserta atau nama event"
                                 class="w-full border-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
                             >
                         </div>
                     </label>
 
-                    <label class="min-w-44">
-                        <span class="sr-only">Filter rating</span>
-                        <select class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 shadow-sm outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100">
-                            <option>Semua</option>
-                            <option>★5</option>
-                            <option>★4</option>
-                            <option>★3</option>
-                            <option>★2</option>
-                            <option>★1</option>
-                        </select>
-                    </label>
+                        <label class="min-w-44">
+                            <span class="sr-only">Filter rating</span>
+                            <select name="rating" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 shadow-sm outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100">
+                                <option value="">Semua</option>
+                                <option value="5" {{ (string)($rating ?? '') === '5' ? 'selected' : '' }}>★5</option>
+                                <option value="4" {{ (string)($rating ?? '') === '4' ? 'selected' : '' }}>★4</option>
+                                <option value="3" {{ (string)($rating ?? '') === '3' ? 'selected' : '' }}>★3</option>
+                                <option value="2" {{ (string)($rating ?? '') === '2' ? 'selected' : '' }}>★2</option>
+                                <option value="1" {{ (string)($rating ?? '') === '1' ? 'selected' : '' }}>★1</option>
+                            </select>
+                        </label>
 
-                    <button type="button" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
-                        Export
-                    </button>
-                </form>
+                        <button type="submit" class="rounded-xl border border-slate-200 bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700">
+                            Cari
+                        </button>
+                    </form>
             </div>
         </div>
 
@@ -70,9 +71,9 @@
                             <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-slate-800">{{ data_get($review, 'participant') }}</td>
                             <td class="whitespace-nowrap px-4 py-4 text-sm text-slate-700">{{ data_get($review, 'event') }}</td>
                             <td class="whitespace-nowrap px-4 py-4">
-                                <div class="flex items-center gap-1 text-amber-400">
+                                <div class="flex items-center gap-1 text-sm">
                                     @for ($i = 1; $i <= 5; $i++)
-                                        <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.955a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.446a1 1 0 00-.364 1.118l1.287 3.955c.3.921-.755 1.688-1.538 1.118L10 2.927z"></path></svg>
+                                        <span class="{{ $i <= data_get($review, 'rating', 0) ? 'text-amber-400' : 'text-slate-300' }}">&#9733;</span>
                                     @endfor
                                 </div>
                             </td>
@@ -83,11 +84,13 @@
                         <tr>
                             <td colspan="5" class="px-6 py-16 text-center">
                                 <div class="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10">
-                                    <svg class="h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5h2m-1 4v10m-6 0h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <h3 class="mt-4 text-lg font-semibold text-slate-800">Belum ada review</h3>
-                                    <p class="mt-2 text-sm text-slate-500">Feedback peserta event akan muncul di sini setelah acara selesai.</p>
+                                    @if (trim($search ?? '') !== '' || trim($rating ?? '') !== '')
+                                        <h3 class="text-lg font-semibold text-slate-800">Data tidak ditemukan</h3>
+                                        <p class="mt-2 text-sm text-slate-500">Coba ubah kata kunci pencarian atau hapus filter rating.</p>
+                                    @else
+                                        <h3 class="text-lg font-semibold text-slate-800">Belum ada review</h3>
+                                        <p class="mt-2 text-sm text-slate-500">Feedback peserta event akan muncul di sini setelah acara selesai.</p>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

@@ -18,7 +18,6 @@
                     <h1 class="mt-4 text-4xl font-black tracking-tight text-slate-900 leading-tight">Semua Kebutuhan Event<br><span class="text-[#4F46E5]">Dalam Satu Platform.</span></h1>
                     <div class="mt-5 border-t border-slate-200"></div>
                     <p class="mt-3 text-base leading-7 text-slate-600">Nikmati pengalaman menemukan event, membeli tiket, dan mengelola acara melalui satu platform yang modern dan mudah digunakan.</p>
-              
                 </div>
             </div>
 
